@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astéria · plataforma estelar</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Pacifico&family=Press+Start+2P&family=Orbitron:wght@400;700;900&family=Cinzel:wght@400;700&family=Great+Vibes&family=Permanent+Marker&family=Lobster&family=Rye&family=Special+Elite&family=Creepster&family=Bangers&family=Monoton&family=Righteous&family=Fredoka+One&family=Abril+Fatface&family=Dancing+Script:wght@400;700&family=Shadows+Into+Light&family=Caveat:wght@400;700&family=Satisfy&family=Kaushan+Script&family=Tangerine:wght@400;700&family=Alfa+Slab+One&family=Audiowide&family=Bungee&family=Exo+2:wght@400;700&family=Megrim&family=Rubik+Mono+One&family=Silkscreen&family=VT323&family=Zilla+Slab+Highlight&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+  body { background:var(--bg-deep); color:var(--text-main); display:flex; flex-direction:column; min-height:100vh; transition:background 0.3s,color 0.3s; }
+
+  :root, [data-theme="dark"] {
+    --bg-deep:#0b0d15; --bg-card:#141a26; --bg-elevated:#1e2636; --bg-input:#0b0f18;
+    --bg-overlay:rgba(11,13,21,0.92); --border-light:#2a3346;
+    --accent:#b7a4ff; --accent-glow:#8a7bff;
+    --text-main:#e9edf5; --text-soft:#b9c2d6; --text-muted:#7d879c;
+    --star-gold:#f5e6b0; --radius-card:24px;
+    --header-bg:rgba(11,13,21,0.9); --tabs-bg:#0f131e; --chat-bg:#0f131e;
+    --danger:#ff5c7a; --success:#4ade80;
+  }
+  [data-theme="light"] {
+    --bg-deep:#f4f6fb; --bg-card:#ffffff; --bg-elevated:#eef1f8; --bg-input:#f7f9fc;
+    --bg-overlay:rgba(244,246,251,0.94); --border-light:#d8deea;
+    --accent:#6d5bd0; --accent-glow:#8a7bff;
+    --text-main:#1a1f2e; --text-soft:#4e5a72; --text-muted:#7d879c;
+    --star-gold:#b8860b; --radius-card:24px;
+    --header-bg:rgba(255,255,255,0.9); --tabs-bg:#eef1f8; --chat-bg:#f7f9fc;
+    --danger:#d6335a; --success:#22a35c;
+  }
+
+  /* ============ PADRÃO GLOBAL DE BOTÕES ============ */
+  .btn-primary, .auth-submit, .send-btn, .btn-publish {
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow)) !important;
+    color: #fff !important;
+    border: none !important;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 18px rgba(138,123,255,0.35);
+  }
+  .btn-primary:hover, .auth-submit:hover, .send-btn:hover, .btn-publish:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(138,123,255,0.55);
+    opacity: 1;
+  }
+  .btn-secondary, .btn-save-draft {
+    background: var(--bg-elevated) !important;
+    color: var(--accent) !important;
+    border: 1px solid var(--accent) !important;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .btn-secondary:hover, .btn-save-draft:hover {
+    background: var(--accent) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+  }
+  .btn-cancel {
+    background: transparent !important;
+    color: var(--text-soft) !important;
+    border: 1px solid var(--border-light) !important;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+  }
+  .btn-cancel:hover {
+    background: var(--danger) !important;
+    color: #fff !important;
+    border-color: var(--danger) !important;
+    transform: translateY(-2px);
+  }
+
+  /* AUTH SCREEN */
+  .auth-screen { position:fixed; inset:0; background:var(--bg-deep); z-index:3000; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .auth-box { background:var(--bg-card); border:1px solid var(--border-light); border-radius:24px; padding:36px 32px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.4); }
+  .auth-logo { display:flex; justify-content:center; margin-bottom:18px; }
+  .auth-logo svg { width:56px; height:56px; filter:drop-shadow(0 0 14px #b7a4ff); }
+  .auth-box h1 { text-align:center; font-size:1.5rem; margin-bottom:6px; color:var(--text-main); }
+  .auth-box p.sub { text-align:center; font-size:0.85rem; color:var(--text-soft); margin-bottom:24px; }
+  .auth-tabs { display:flex; background:var(--bg-elevated); border-radius:40px; padding:4px; margin-bottom:22px; }
+  .auth-tab { flex:1; background:transparent; border:none; padding:10px; border-radius:36px; font-size:0.88rem; font-weight:600; color:var(--text-soft); cursor:pointer; transition:0.2s; }
+  .auth-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color:#fff; box-shadow: 0 4px 14px rgba(138,123,255,0.4); }
+  .auth-form { display:flex; flex-direction:column; gap:14px; }
+  .auth-field { display:flex; flex-direction:column; gap:6px; }
+  .auth-field label { font-size:0.78rem; color:var(--text-soft); font-weight:500; margin-left:6px; }
+  .auth-field input { background:var(--bg-input); border:1px solid var(--border-light); border-radius:14px; padding:13px 16px; color:var(--text-main); font-size:0.92rem; outline:none; transition:0.2s; }
+  .auth-field input:focus { border-color:var(--accent); }
+  .auth-submit { padding:13px; border-radius:40px; font-size:0.95rem; margin-top:8px; }
+  .auth-error { background:rgba(255,92,122,0.15); border:1px solid var(--danger); color:var(--danger); padding:10px 14px; border-radius:12px; font-size:0.82rem; display:none; }
+  .auth-error.show { display:block; }
+  .auth-note { font-size:0.72rem; color:var(--text-muted); text-align:center; margin-top:14px; line-height:1.5; }
+  .auth-note i { color:var(--accent); }
+
+  /* HEADER */
+  .header { padding:16px 28px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border-light); background:var(--header-bg); backdrop-filter:blur(12px); position:sticky; top:0; z-index:100; }
+  .asteria-logo { display:flex; align-items:center; gap:10px; font-size:1.6rem; font-weight:600; color:var(--text-main); text-shadow:0 0 10px var(--accent-glow); }
+  .asteria-logo svg { width:34px; height:34px; }
+  .search-tab { display:flex; align-items:center; background:var(--bg-card); border-radius:100px; padding:6px 18px; gap:10px; border:1px solid var(--border-light); flex:0 1 380px; margin:0 16px; position:relative; }
+  .search-tab input { background:transparent; border:none; outline:none; color:var(--text-main); font-size:0.92rem; width:100%; padding:6px 0; }
+  .search-tab input::placeholder { color:var(--text-muted); }
+  .nav-icons { display:flex; gap:14px; align-items:center; }
+  .icon-circle { background:var(--bg-elevated); border:1px solid var(--border-light); color:var(--accent); width:40px; height:40px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1rem; transition:0.2s; position:relative; }
+  .icon-circle:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color:#fff; border-color: transparent; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(138,123,255,0.4); }
+  .notif-badge { position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff; font-size:0.6rem; font-weight:700; padding:1px 5px; border-radius:10px; min-width:16px; text-align:center; line-height:1.2; border:2px solid var(--bg-deep); }
+  .user-chip { display:flex; align-items:center; gap:8px; background:var(--bg-elevated); border:1px solid var(--border-light); border-radius:40px; padding:5px 14px 5px 5px; cursor:pointer; transition:0.2s; }
+  .user-chip:hover { border-color:var(--accent); box-shadow: 0 0 0 2px rgba(183,164,255,0.2); }
+  .user-chip-avatar { width:30px; height:30px; border-radius:50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700; overflow:hidden; }
+  .user-chip-avatar img { width:100%; height:100%; object-fit:cover; }
+  .user-chip-name { font-size:0.82rem; color:var(--text-main); font-weight:500; max-width:100px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .tabs-bar { display:flex; flex-wrap:wrap; gap:6px; padding:10px 28px; background:var(--tabs-bg); border-bottom:1px solid var(--border-light); }
+  .tab-btn { background:transparent; border:none; color:var(--text-soft); padding:9px 22px; font-size:0.92rem; font-weight:500; border-radius:40px; cursor:pointer; transition:0.15s; display:flex; align-items:center; gap:8px; position:relative; }
+  .tab-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color:#fff; box-shadow:0 4px 16px rgba(138,123,255,0.4); }
+  .tab-btn:hover { background:var(--bg-elevated); }
+  .tab-btn.active:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); }
+  .tab-badge { background:var(--danger); color:#fff; font-size:0.6rem; font-weight:700; padding:0 5px; border-radius:8px; min-width:15px; text-align:center; line-height:1.4; margin-left:4px; }
+  .main-content { flex:1; padding:28px; max-width:1400px; margin:0 auto; width:100%; }
+  .tab-section { display:none; animation:fade 0.2s ease; }
+  .tab-section.active { display:block; }
+  @keyframes fade { from { opacity:0.4; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* FEED */
+  .feed-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px; margin-top:20px; }
+  .story-card { background:var(--bg-card); border-radius:var(--radius-card); overflow:hidden; border:1px solid var(--border-light); transition:0.2s; cursor:pointer; display:flex; flex-direction:column; position:relative; }
+  .story-card:hover { transform:translateY(-4px); border-color:var(--accent); }
+  .card-media { height:180px; background:linear-gradient(145deg,var(--bg-elevated),var(--bg-card)); display:flex; align-items:center; justify-content:center; font-size:2.8rem; color:rgba(183,164,255,0.35); overflow:hidden; position:relative; }
+  .card-media img { width:100%; height:100%; object-fit:cover; }
+  .badge-new { position:absolute; top:10px; left:10px; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color:#fff; font-size:0.65rem; font-weight:700; padding:3px 9px; border-radius:20px; }
+  .card-body { padding:16px; flex:1; display:flex; flex-direction:column; }
+  .card-body h3 { font-size:1.05rem; font-weight:600; margin-bottom:6px; color:var(--text-main); }
+  .card-body p { font-size:0.85rem; color:var(--text-soft); line-height:1.4; flex:1; }
+  .card-meta { display:flex; align-items:center; gap:12px; margin-top:14px; font-size:0.75rem; color:var(--text-muted); }
+  .card-meta i { margin-right:4px; color:var(--accent); }
+  .card-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .hashtag { color:var(--accent); font-weight:500; cursor:pointer; }
+  .hashtag:hover { text-decoration:underline; }
+  .mention { color:var(--accent); font-weight:600; cursor:pointer; }
+  .mention:hover { text-decoration:underline; }
+  .tag-chip { background:var(--bg-elevated); border:1px solid var(--border-light); color:var(--accent); font-size:0.72rem; padding:2px 10px; border-radius:20px; cursor:pointer; }
+  .tag-chip:hover { background: var(--accent); color:#fff; }
+  .delete-post-btn { position:absolute; top:10px; right:10px; background:rgba(11,13,21,0.75); border:1px solid var(--border-light); color:#ff8a9b; width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.8rem; z-index:5; opacity:0; transition:0.2s; }
+  .story-card:hover .delete-post-btn { opacity:1; }
+  .delete-post-btn:hover { background:var(--danger); color:#fff; border-color:var(--danger); }
+  .edit-post-btn { position:absolute; top:10px; right:50px; background:rgba(11,13,21,0.75); border:1px solid var(--border-light); color:var(--accent); width:32px; height:32px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:0.8rem; z-index:5; opacity:0; transition:0.2s; }
+  .story-card:hover .edit-post-btn { opacity:1; }
+  .edit-post-btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .empty-feed { text-align:center; padding:60px 20px; color:var(--text-muted); grid-column:1/-1; }
+  .empty-feed i { font-size:2.5rem; margin-bottom:12px; display:block; color:var(--border-light); }
+
+  /* USER SEARCH RESULT */
+  .user-result-card { background:var(--bg-card); border-radius:var(--radius-card); overflow:hidden; border:1px solid var(--border-light); transition:0.2s; cursor:pointer; display:flex; flex-direction:column; position:relative; }
+  .user-result-card:hover { transform:translateY(-4px); border-color:var(--accent); }
+  .user-result-avatar { height:160px; background:linear-gradient(145deg,var(--bg-elevated),var(--bg-card)); display:flex; align-items:center; justify-content:center; font-size:3.4rem; color:rgba(183,164,255,0.45); overflow:hidden; }
+  .user-result-avatar img { width:100%; height:100%; object-fit:cover; }
+  .user-result-body { padding:16px; display:flex; flex-direction:column; flex:1; }
+  .user-result-body h3 { font-size:1.05rem; font-weight:600; color:var(--text-main); }
+  .user-result-body .at { font-size:0.82rem; color:var(--accent); font-weight:600; margin-top:2px; }
+  .user-result-body p { font-size:0.82rem; color:var(--text-soft); line-height:1.4; margin-top:8px; flex:1; }
+  .user-result-body .btn-view { margin-top:14px; background:var(--bg-elevated); border:1px solid var(--border-light); color:var(--accent); padding:8px; border-radius:30px; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition: 0.2s; }
+  .user-result-body .btn-view:hover { background: var(--accent); color:#fff; border-color:var(--accent); }
+
+  /* CHATS */
+  .chat-layout { display:grid; grid-template-columns:340px 1fr; gap:18px; margin-top:20px; min-height:560px; }
+  .chat-sidebar { background:var(--bg-card); border:1px solid var(--border-light); border-radius:var(--radius-card); padding:14px; max-height:640px; overflow-y:auto; }
+  .chat-list { display:flex; flex-direction:column; gap:8px; }
+  .chat-item { display:flex; align-items:center; gap:14px; padding:12px 14px; border-radius:18px; border:1px solid transparent; cursor:pointer; transition:0.2s; position:relative; }
+  .chat-item:hover { background:var(--bg-elevated); }
+  .chat-item.active { background:var(--bg-elevated); border-color:var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .chat-avatar { width:46px; height:46px; flex:0 0 46px; border-radius:50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:#fff; overflow:hidden; }
+  .chat-avatar img { width:100%; height:100%; object-fit:cover; }
+  .chat-info { flex:1; min-width:0; }
+  .chat-info h4 { font-weight:600; font-size:0.95rem; color:var(--text-main); }
+  .chat-info span { font-size:0.78rem; color:var(--text-soft); display:block; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .unread-badge { display:inline-block; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color:#fff; font-size:0.65rem; font-weight:700; padding:1px 7px; border-radius:10px; margin-left:6px; }
+
+  /* CHAT FULLSCREEN */
+  .chat-panel-fullscreen { position: fixed; inset: 0; z-index: 1500; background: var(--bg-deep); display: flex; flex-direction: column; padding: 0; animation: slideUp 0.25s ease; }
+  @keyframes slideUp { from { opacity: 0.5; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .chat-fullscreen-header { display: flex; align-items: center; gap: 14px; padding: 16px 24px; border-bottom: 1px solid var(--border-light); background: var(--bg-card); flex-shrink: 0; }
+  .chat-fullscreen-header .chat-avatar { width: 48px; height: 48px; flex: 0 0 48px; }
+  .chat-fullscreen-header h3 { font-size: 1.1rem; font-weight: 600; color: var(--text-main); }
+  .chat-fullscreen-header .status { font-size: 0.78rem; color: var(--success); }
+  .chat-close-btn { margin-left: auto; background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: 0.2s; flex-shrink: 0; }
+  .chat-close-btn:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: #fff; border-color: transparent; }
+  .chat-fullscreen-messages { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: var(--chat-bg); }
+  .chat-fullscreen-messages .msg { max-width: 70%; padding: 12px 18px; border-radius: 20px; font-size: 0.92rem; line-height: 1.45; word-wrap: break-word; position: relative; }
+  .chat-fullscreen-messages .msg.them { background: var(--bg-elevated); color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .chat-fullscreen-messages .msg.me { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
+  .msg-time { font-size: 0.68rem; opacity: 0.6; display: block; margin-top: 5px; }
+  .msg-delete-btn { position: absolute; top: -6px; right: -6px; background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--danger); width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; opacity: 0; transition: 0.15s; }
+  .msg.me .msg-delete-btn { background: #fff; color: var(--danger); }
+  .msg:hover .msg-delete-btn { opacity: 1; }
+  .msg-delete-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+  .chat-fullscreen-input-bar { display: flex; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--border-light); background: var(--bg-card); align-items: center; flex-shrink: 0; }
+  .chat-fullscreen-input-bar input[type="text"] { flex: 1; background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 40px; padding: 14px 22px; color: var(--text-main); font-size: 0.95rem; outline: none; }
+  .chat-fullscreen-input-bar input[type="text"]:focus { border-color: var(--accent); }
+  .send-btn { width: 46px; height: 46px; border-radius: 50%; font-size: 1.05rem; flex-shrink: 0; }
+  .delete-chat-btn { margin-left: auto; background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--danger); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: 0.2s; flex-shrink: 0; }
+  .delete-chat-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  /* BLOG FULLSCREEN EDITOR */
+  .blog-editor-overlay { position: fixed; inset: 0; z-index: 1800; background: var(--bg-deep); display: flex; flex-direction: column; animation: slideUp 0.25s ease; }
+  .blog-editor-header { display: flex; align-items: center; gap: 16px; padding: 16px 28px; border-bottom: 1px solid var(--border-light); background: var(--bg-card); flex-shrink: 0; flex-wrap: wrap; }
+  .blog-editor-header h2 { font-size: 1.1rem; font-weight: 600; color: var(--text-main); margin-right: auto; display: flex; align-items: center; gap: 8px; }
+  .blog-editor-header h2 i { color: var(--accent); }
+  .blog-editor-close { background: var(--bg-elevated); border: 1px solid var(--border-light); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; transition: 0.2s; }
+  .blog-editor-close:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: #fff; border-color: transparent; }
+  .blog-editor-body { flex: 1; overflow-y: auto; padding: 28px; display: flex; justify-content: center; }
+  .blog-editor-container { max-width: 900px; width: 100%; display: flex; flex-direction: column; gap: 18px; }
+
+  /* Barra de ferramentas de fonte */
+  .font-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 8px 12px; }
+  .font-toolbar button { background: transparent; border: 1px solid transparent; color: var(--text-main); width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.15s; }
+  .font-toolbar button:hover { background: var(--bg-elevated); border-color: var(--border-light); }
+  .font-toolbar button.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: #fff; border-color: transparent; }
+  .font-toolbar select { background: var(--bg-input); border: 1px solid var(--border-light); color: var(--text-main); border-radius: 10px; padding: 7px 10px; font-size: 0.82rem; outline: none; cursor: pointer; height: 36px; max-width: 200px; }
+  .font-toolbar select:focus { border-color: var(--accent); }
+  .font-toolbar .separator { width: 1px; height: 24px; background: var(--border-light); margin: 0 4px; }
+
+  /* Título do blog */
+  .blog-title-input { width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--border-light); padding: 8px 4px 14px; color: var(--text-main); font-size: 1.8rem; font-weight: 700; outline: none; transition: border-color 0.2s; }
+  .blog-title-input:focus { border-color: var(--accent); }
+  .blog-title-input::placeholder { color: var(--text-muted); font-weight: 600; }
+
+  /* Editor de conteúdo */
+  .blog-content-editor { width: 100%; min-height: 320px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 16px; padding: 22px 24px; color: var(--text-main); font-size: 1rem; line-height: 1.7; outline: none; overflow-y: auto; }
+  .blog-content-editor:focus { border-color: var(--accent); }
+  .blog-content-editor:empty:before { content: attr(data-placeholder); color: var(--text-muted); pointer-events: none; }
+  .blog-content-editor img { max-width: 100%; border-radius: 12px; margin: 10px 0; display: block; }
+
+  .blog-editor-footer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding-top: 4px; }
+  .blog-editor-footer button { padding: 14px 32px; border-radius: 40px; font-size: 1rem; font-weight: 700; letter-spacing: 0.02em; }
+  .blog-editor-footer .btn-publish { }
+  .blog-editor-footer .btn-save-draft { }
+  .blog-editor-footer .btn-cancel { }
+
+  .media-preview-inline { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 6px; }
+  .media-item { position: relative; width: 110px; height: 110px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border-light); }
+  .media-item img { width: 100%; height: 100%; object-fit: cover; }
+  .remove-media { position: absolute; top: 4px; right: 4px; background: rgba(11,13,21,0.85); border: 1px solid var(--border-light); color: #ff8a8a; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; font-size: 0.7rem; display: flex; align-items: center; justify-content: center; }
+  .remove-media:hover { background: var(--danger); color: #fff; }
+
+  .autosave-hint { font-size: 0.72rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .autosave-hint.saved { color: var(--success); }
+
+  /* DRAFTS */
+  .drafts-section { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-card); padding: 22px; max-width: 900px; margin: 20px auto; }
+  .drafts-section h3 { font-size: 1rem; margin-bottom: 14px; color: var(--text-soft); display: flex; align-items: center; gap: 8px; }
+  .drafts-section h3 i { color: var(--accent); }
+  .draft-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: var(--bg-elevated); border: 1px solid var(--border-light); border-radius: 14px; margin-bottom: 10px; }
+  .draft-thumb { width: 50px; height: 50px; border-radius: 10px; background: var(--bg-card); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1.1rem; overflow: hidden; flex-shrink: 0; }
+  .draft-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .draft-info { flex: 1; min-width: 0; }
+  .draft-info h4 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .draft-info span { font-size: 0.72rem; color: var(--text-soft); }
+  .draft-actions { display: flex; gap: 6px; }
+  .draft-action { background: transparent; border: 1px solid var(--border-light); color: var(--text-soft); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: 0.2s; }
+  .draft-action:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .draft-action.del:hover { background: var(--danger); border-color: var(--danger); }
+  .empty-drafts { text-align: center; padding: 22px; color: var(--text-muted); font-size: 0.85rem; }
+  .empty-drafts i { font-size: 1.6rem; margin-bottom: 8px; display: block; color: var(--border-light); }
+
+  /* PERFIL */
+  .profile-container { max-width: 900px; margin: 0 auto; }
+  .profile-banner { width: 100%; height: 220px; background: linear-gradient(120deg, var(--bg-elevated), var(--bg-card)); border-radius: 32px 32px 0 0; position: relative; overflow: hidden; border: 1px solid var(--border-light); border-bottom: none; background-size: cover; background-position: center; }
+  .banner-edit-btn { position: absolute; bottom: 12px; right: 20px; background: rgba(11,13,21,0.7); border: 1px solid var(--border-light); color: #fff; border-radius: 40px; padding: 6px 16px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .banner-edit-btn:hover { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border-color: transparent; }
+  .profile-head { background: var(--bg-card); border: 1px solid var(--border-light); border-top: none; border-radius: 0 0 32px 32px; padding: 0 32px 28px; }
+  .profile-head-row { display: flex; align-items: flex-end; gap: 22px; flex-wrap: wrap; }
+  .profile-avatar-large { width: 130px; height: 130px; border-radius: 50%; background: var(--bg-elevated); border: 4px solid var(--bg-card); margin-top: -65px; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--accent); overflow: hidden; position: relative; box-shadow: 0 0 0 3px var(--accent); flex-shrink: 0; }
+  .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-edit-btn { position: absolute; bottom: 0; right: 0; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); border: none; width: 36px; height: 36px; border-radius: 50%; color: #fff; cursor: pointer; font-size: 0.9rem; z-index: 2; display: flex; align-items: center; justify-content: center; }
+  .profile-head-info { flex: 1; min-width: 200px; padding-bottom: 6px; }
+  .profile-head-info h2 { font-size: 1.8rem; font-weight: 700; color: var(--text-main); }
+  .profile-head-info .at { color: var(--accent); font-size: 0.95rem; margin-top: 2px; font-weight: 600; }
+  .profile-head-actions { display: flex; gap: 10px; flex-wrap: wrap; padding-bottom: 8px; }
+  .profile-bio { margin-top: 18px; font-size: 0.95rem; line-height: 1.55; color: var(--text-main); white-space: pre-wrap; }
+  .profile-bio.empty { color: var(--text-muted); font-style: italic; }
+  .profile-stats { display: flex; gap: 24px; margin-top: 16px; flex-wrap: wrap; font-size: 0.88rem; color: var(--text-soft); }
+  .profile-stats strong { color: var(--text-main); font-weight: 700; }
+  .profile-stats i { color: var(--accent); }
+  .edit-fields { display: flex; flex-direction: column; gap: 16px; margin-top: 24px; }
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-group label { font-size: 0.8rem; color: var(--text-soft); font-weight: 500; margin-left: 6px; display: flex; justify-content: space-between; }
+  .field-group label .counter { font-size: 0.72rem; color: var(--text-muted); }
+  .field-group input, .field-group textarea { background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 14px; padding: 13px 16px; color: var(--text-main); font-size: 0.92rem; outline: none; font-family: inherit; resize: vertical; }
+  .field-group input:focus, .field-group textarea:focus { border-color: var(--accent); }
+  .field-group textarea { min-height: 100px; }
+  .edit-actions { display: flex; align-items: center; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+  .save-status { font-size: 0.8rem; color: var(--success); opacity: 0; transition: opacity 0.3s; }
+  .save-status.show { opacity: 1; }
+  input[type="file"] { display: none; }
+  .user-posts { margin-top: 28px; }
+  .user-posts h3 { font-size: 1rem; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; color: var(--text-soft); }
+  .user-posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+  .mini-post { background: var(--bg-elevated); border: 1px solid var(--border-light); border-radius: 16px; overflow: hidden; cursor: pointer; transition: 0.2s; position: relative; }
+  .mini-post:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .mini-post .thumb { height: 110px; background: linear-gradient(145deg, var(--bg-elevated), var(--bg-card)); display: flex; align-items: center; justify-content: center; color: rgba(183,164,255,0.35); font-size: 1.6rem; overflow: hidden; }
+  .mini-post .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .mini-post .mini-body { padding: 10px 12px; }
+  .mini-post .mini-body h4 { font-size: 0.82rem; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-post .mini-body span { font-size: 0.7rem; color: var(--text-soft); }
+  .mini-delete-btn { position: absolute; top: 6px; right: 6px; background: rgba(11,13,21,0.75); border: 1px solid var(--border-light); color: #ff8a9b; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; opacity: 0; transition: 0.2s; }
+  .mini-post:hover .mini-delete-btn { opacity: 1; }
+  .mini-delete-btn:hover { background: var(--danger); color: #fff; }
+  .mini-edit-btn { position: absolute; top: 6px; right: 40px; background: rgba(11,13,21,0.75); border: 1px solid var(--border-light); color: var(--accent); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; opacity: 0; transition: 0.2s; }
+  .mini-post:hover .mini-edit-btn { opacity: 1; }
+  .mini-edit-btn:hover { background: var(--accent); color: #fff; }
+
+  /* NOTIFICAÇÕES */
+  .notif-panel { position: fixed; top: 70px; right: 24px; width: 360px; max-height: 520px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 20px; z-index: 1600; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: fade 0.2s ease; }
+  .notif-panel-header { padding: 16px 18px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; background: var(--bg-elevated); }
+  .notif-panel-header h3 { font-size: 1rem; font-weight: 600; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+  .notif-panel-header h3 i { color: var(--accent); }
+  .notif-panel-actions { display: flex; gap: 8px; }
+  .notif-panel-actions button { background: transparent; border: none; color: var(--text-soft); font-size: 0.75rem; cursor: pointer; text-decoration: underline; padding: 4px 6px; }
+  .notif-panel-actions button:hover { color: var(--accent); }
+  .notif-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .notif-item { display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; cursor: pointer; transition: 0.15s; border: 1px solid transparent; position: relative; }
+  .notif-item:hover { background: var(--bg-elevated); }
+  .notif-item.unread { background: rgba(183,164,255,0.08); border-color: rgba(183,164,255,0.25); }
+  .notif-item .notif-icon { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 1rem; }
+  .notif-item.unread .notif-icon { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: #fff; }
+  .notif-item .notif-content { flex: 1; min-width: 0; }
+  .notif-item .notif-content h4 { font-size: 0.88rem; font-weight: 600; color: var(--text-main); margin-bottom: 2px; }
+  .notif-item .notif-content p { font-size: 0.8rem; color: var(--text-soft); line-height: 1.3; }
+  .notif-item .notif-time { font-size: 0.68rem; color: var(--text-muted); margin-top: 4px; display: block; }
+  .notif-item .notif-mark-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.7rem; cursor: pointer; padding: 2px 4px; align-self: flex-start; }
+  .notif-item .notif-mark-btn:hover { color: var(--accent); }
+  .notif-empty { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.85rem; }
+  .notif-empty i { font-size: 2rem; margin-bottom: 10px; display: block; color: var(--border-light); }
+  @media (max-width: 700px) { .notif-panel { width: calc(100% - 24px); right: 12px; top: 64px; } }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: var(--bg-overlay); backdrop-filter: blur(6px); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .modal-box { background: var(--bg-card); border: 1px solid var(--border-light); border-radius: 24px; max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto; }
+  .modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: flex-start; position: sticky; top: 0; background: var(--bg-card); z-index: 2; gap: 12px; }
+  .modal-close { background: var(--bg-elevated); border: 1px solid var(--border-light); width: 34px; height: 34px; border-radius: 50%; color: var(--text-main); cursor: pointer; flex-shrink: 0; transition: 0.2s; }
+  .modal-close:hover { background: var(--bg-elevated); color: var(--accent); border-color: var(--accent); }
+  .modal-body { padding: 24px; }
+  .user-modal-box { max-width: 420px; text-align: center; padding: 28px; position: relative; }
+  .user-modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-glow)); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2rem; margin: 0 auto 12px; border: 2px solid var(--accent); }
+  .user-modal-box h3 { font-size: 1.3rem; color: var(--text-main); }
+  .user-modal-box .at { color: var(--accent); font-size: 0.9rem; margin-top: 2px; font-weight: 600; }
+  .user-modal-box p { color: var(--text-soft); font-size: 0.88rem; margin-top: 12px; line-height: 1.5; }
+
+  /* SETTINGS MODAL */
+  .settings-modal-box { max-width: 480px; width: 100%; padding: 28px; position: relative; }
+  .settings-modal-box h2 { font-size: 1.3rem; margin-bottom: 6px; color: var(--text-main); }
+  .settings-modal-box .sub { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 22px; }
+  .settings-tab-row { display: flex; gap: 8px; margin-bottom: 18px; background: var(--bg-elevated); border-radius: 40px; padding: 4px; }
+  .settings-tab { flex: 1; background: transparent; border: none; padding: 9px; border-radius: 36px; font-size: 0.82rem; font-weight: 600; color: var(--text-soft); cursor: pointer; transition: 0.2s; }
+  .settings-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent-glow)); color: #fff; box-shadow: 0 4px 14px rgba(138,123,255,0.4); }
+  .settings-form { display: flex; flex-direction: column; gap: 14px; }
+  .settings-form .field-group { margin-bottom: 0; }
+  .settings-form input, .settings-form textarea, .settings-form select { background: var(--bg-input); border: 1px solid var(--border-light); border-radius: 14px; padding: 12px 16px; color: var(--text-main); font-size: 0.9rem; outline: none; font-family: inherit; }
+  .settings-form input:focus, .settings-form textarea:focus, .settings-form select:focus { border-color: var(--accent); }
+  .settings-form textarea { min-height: 80px; resize: vertical; }
+  .settings-msg { font-size: 0.8rem; padding: 10px 14px; border-radius: 12px; display: none; }
+  .settings-msg.show { display: block; }
+  .settings-msg.success { background: rgba(74,222,128,0.12); border: 1px solid var(--success); color: var(--success); }
+  .settings-msg.error { background: rgba(255,92,122,0.12); border: 1px solid var(--danger); color: var(--danger); }
+
+  .footer-note { text-align: center; padding: 22px; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-light); margin-top: 30px; }
+
+  @media (max-width: 900px) { .chat-layout { grid-template-columns: 1fr; } .chat-sidebar { max-height: 260px; } }
+  @media (max-width: 700px) {
+    .header { padding: 14px 16px; } .tabs-bar { padding: 8px 14px; }
+    .main-content { padding: 16px; } .tab-btn { padding: 8px 14px; font-size: 0.82rem; }
+    .search-tab { flex: 1 1 100%; margin: 10px 0 0; order: 3; }
+    .user-chip-name { display: none; }
+    .profile-banner { height: 150px; border-radius: 24px 24px 0 0; }
+    .profile-head { padding: 0 18px 20px; border-radius: 0 0 24px 24px; }
+    .profile-avatar-large { width: 96px; height: 96px; margin-top: -48px; font-size: 2.2rem; }
+    .profile-head-info h2 { font-size: 1.4rem; }
+    .chat-fullscreen-messages .msg { max-width: 85%; }
+    .chat-fullscreen-header { padding: 12px 16px; }
+    .chat-fullscreen-input-bar { padding: 12px 16px; }
+    .blog-editor-body { padding: 16px; }
+    .blog-title-input { font-size: 1.4rem; }
+    .blog-editor-footer button { padding: 12px 22px; font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <svg viewBox="0 0 100 100" fill="none"><path d="M50 5 L61 35 L93 35 L67 54 L77 85 L50 66 L23 85 L33 54 L7 35 L39 35 L50 5Z" fill="url(#g)" stroke="#f5e6b0" stroke-width="2"/><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6b0"/><stop offset="60%" stop-color="#b7a4ff"/><stop offset="100%" stop-color="#8a7bff"/></linearGradient></defs></svg>
+    </div>
+    <h1>Astéria</h1>
+    <p class="sub">Sua conta na nuvem. Seus posts, rascunhos e chats sempre salvos.</p>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin">Entrar</button>
+      <button class="auth-tab" id="tabSignup">Criar conta</button>
+    </div>
+
+    <div class="auth-error" id="authError"></div>
+
+    <form class="auth-form" id="loginForm">
+      <div class="auth-field"><label>Usuário ou e-mail</label><input type="text" id="loginUser" placeholder="ex: alex.estrela" autocomplete="username"></div>
+      <div class="auth-field"><label>Senha</label><input type="password" id="loginPass" placeholder="Sua senha" autocomplete="current-password"></div>
+      <button type="submit" class="auth-submit"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+      <p class="auth-note"><i class="fas fa-cloud"></i> Seus dados ficam salvos na sua conta — não perde nada ao trocar de dispositivo.</p>
+    </form>
+
+    <form class="auth-form" id="signupForm" style="display:none;">
+      <div class="auth-field"><label>Nome de exibição</label><input type="text" id="signupName" placeholder="Alex Estrela" maxlength="40"></div>
+      <div class="auth-field"><label>Usuário (@)</label><input type="text" id="signupUser" placeholder="alex.estrela" maxlength="24"></div>
+      <div class="auth-field"><label>E-mail</label><input type="email" id="signupEmail" placeholder="voce@exemplo.com"></div>
+      <div class="auth-field"><label>Senha (mín. 6 caracteres)</label><input type="password" id="signupPass" placeholder="Crie uma senha" minlength="6"></div>
+      <div class="auth-field"><label>Confirmar senha</label><input type="password" id="signupPass2" placeholder="Repita a senha" minlength="6"></div>
+      <button type="submit" class="auth-submit"><i class="fas fa-user-plus"></i> Criar conta</button>
+      <p class="auth-note"><i class="fas fa-shield-alt"></i> A senha é guardada apenas no seu navegador (demo). Em produção, seria hasheada no servidor.</p>
+    </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none; flex-direction:column; min-height:100vh;">
+<header class="header">
+  <div class="asteria-logo">
+    <svg viewBox="0 0 100 100" fill="none"><path d="M50 5 L61 35 L93 35 L67 54 L77 85 L50 66 L23 85 L33 54 L7 35 L39 35 L50 5Z" fill="url(#g2)" stroke="#f5e6b0" stroke-width="2"/><defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f5e6b0"/><stop offset="60%" stop-color="#b7a4ff"/><stop offset="100%" stop-color="#8a7bff"/></linearGradient></defs></svg>
+    <span>Astéria</span>
+  </div>
+  <div class="search-tab"><i class="fas fa-search"></i><input type="text" id="globalSearch" placeholder="Pesquisar posts, #hashtags, @pessoas..."></div>
+  <div class="nav-icons">
+    <button class="icon-circle" id="themeToggle" title="Modo claro/escuro"><i class="fas fa-moon"></i></button>
+    <button class="icon-circle" id="notifBtn" title="Notificações">
+      <i class="far fa-bell"></i>
+      <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+    </button>
+    <button class="icon-circle" id="settingsBtn" title="Configurações"><i class="fas fa-cog"></i></button>
+    <div class="user-chip" id="userChip" title="Seu perfil">
+      <div class="user-chip-avatar" id="userChipAvatar"><i class="fas fa-user-astronaut"></i></div>
+      <span class="user-chip-name" id="userChipName">—</span>
+      <i class="fas fa-chevron-down" style="font-size:0.7rem; color:var(--text-muted);"></i>
+    </div>
+  </div>
+</header>
+
+<div class="tabs-bar">
+  <button class="tab-btn active" data-tab="feed"><i class="fas fa-compass"></i> Descobrir</button>
+  <button class="tab-btn" data-tab="chats"><i class="fas fa-comment-dots"></i> Chats</button>
+  <button class="tab-btn" data-tab="blog"><i class="fas fa-feather-alt"></i> Criar blog</button>
+  <button class="tab-btn" data-tab="profile"><i class="fas fa-user-astronaut"></i> Perfil</button>
+</div>
+
+<main class="main-content">
+  <!-- FEED -->
+  <section id="feed-section" class="tab-section active">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <h2 style="font-weight:500;"><i class="fas fa-star" style="color:var(--star-gold);"></i> Descobrir</h2>
+      <span id="feedCount" style="font-size:0.8rem; color:var(--text-soft);"></span>
+    </div>
+    <div id="activeFilter" style="display:none; margin-top:10px; font-size:0.85rem; color:var(--text-soft);">
+      Filtrando por: <span id="activeFilterLabel" style="color:var(--accent); font-weight:600;"></span>
+      <button id="clearFilter" style="background:transparent;border:none;color:var(--text-muted);cursor:pointer;margin-left:8px;text-decoration:underline;font-size:0.85rem;">limpar</button>
+    </div>
+    <div class="feed-grid" id="feedGrid"></div>
+  </section>
+
+  <!-- CHATS -->
+  <section id="chats-section" class="tab-section">
+    <h2 style="font-weight:500; margin-bottom:8px;"><i class="fas fa-comment-dots"></i> Conversas</h2>
+    <div class="chat-layout">
+      <aside class="chat-sidebar"><div class="chat-list" id="chatList"></div></aside>
+      <div class="chat-panel" style="display: flex; align-items: center; justify-content: center; background: var(--bg-card); border:1px solid var(--border-light); border-radius: var(--radius-card);">
+        <div class="empty-chat" id="emptyChat"><i class="fas fa-comments"></i><span>Selecione uma conversa na lista</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG (lista de rascunhos e botão para abrir editor) -->
+  <section id="blog-section" class="tab-section">
+    <div class="drafts-section" style="margin-top:20px;">
+      <h3><i class="fas fa-inbox"></i> Rascunhos de blogs</h3>
+      <div id="blogDraftsList"></div>
+      <div style="margin-top:18px; display:flex; justify-content:center;">
+        <button class="btn-primary" id="openBlogEditorBtn" style="padding:14px 40px; font-size:1rem;"><i class="fas fa-feather-alt"></i> Criar novo blog</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERFIL -->
+  <section id="profile-section" class="tab-section">
+    <div class="profile-container">
+      <div class="profile-banner" id="bannerPreview">
+        <div class="banner-edit-btn" id="bannerEditBtn" onclick="document.getElementById('bannerUpload').click()"><i class="fas fa-camera"></i> Alterar banner</div>
+        <input type="file" id="bannerUpload" accept="image/*">
+      </div>
+      <div class="profile-head">
+        <div class="profile-head-row">
+          <div class="profile-avatar-large" id="avatarPreview">
+            <div id="avatarPlaceholder" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;"><i class="fas fa-user-astronaut"></i></div>
+            <img id="avatarImg" style="display:none;" alt="avatar">
+            <div class="avatar-edit-btn" id="avatarEditBtn" onclick="document.getElementById('avatarUpload').click()"><i class="fas fa-camera"></i></div>
+            <input type="file" id="avatarUpload" accept="image/*">
+          </div>
+          <div class="profile-head-info"><h2 id="profileNameDisplay">—</h2><div class="at" id="profileAtDisplay">—</div></div>
+          <div class="profile-head-actions" id="profileActions"></div>
+        </div>
+        <p class="profile-bio empty" id="bioDisplay">—</p>
+        <div class="profile-stats">
+          <span><strong id="statPosts">0</strong> publicações</span>
+          <span><i class="fas fa-heart"></i> <strong id="statLikes">0</strong> curtidas</span>
+          <span><i class="fas fa-eye"></i> <strong id="statViews">0</strong> visualizações</span>
+        </div>
+
+        <div class="edit-fields" id="editFields" style="display:none;">
+          <div class="field-group"><label>Nome</label><input type="text" id="nameInput" maxlength="40"></div>
+          <div class="field-group"><label>@ usuário</label><input type="text" id="atInput" maxlength="30"></div>
+          <div class="field-group"><label>Biografia <span class="counter"><span id="bioCounter">0</span>/160</span></label><textarea id="bioInput" maxlength="160"></textarea></div>
+          <div class="edit-actions">
+            <button class="btn-primary" id="saveProfileBtn"><i class="fas fa-save"></i> Salvar</button>
+            <button class="btn-secondary" id="saveProfileDraftBtn"><i class="fas fa-cloud"></i> Salvar rascunho</button>
+            <button class="btn-secondary" id="cancelEditBtn"><i class="fas fa-times"></i> Cancelar</button>
+            <button class="btn-secondary" id="resetProfileBtn" style="margin-left:auto;"><i class="fas fa-undo"></i> Padrão</button>
+            <span class="save-status" id="saveStatus">✓ Salvo!</span>
+          </div>
+        </div>
+
+        <div class="drafts-section" style="margin:22px 0 0; padding:18px;">
+          <h3><i class="fas fa-inbox"></i> Rascunho de perfil</h3>
+          <div id="profileDraftList"></div>
+        </div>
+      </div>
+
+      <div class="user-posts">
+        <h3><i class="fas fa-layer-group"></i> Minhas publicações</h3>
+        <div class="user-posts-grid" id="userPostsGrid"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer-note">Astéria © 2025 · seus dados na nuvem · estrela original</footer>
+</div>
+
+<script>
+/* ============================================================
+   CAMADA "NUVEM"
+============================================================ */
+const Cloud = {
+  _key(user, section) { return `asteria_cloud::${user}::${section}`; },
+  save(user, section, value) {
+    try { localStorage.setItem(this._key(user, section), JSON.stringify(value)); return true; }
+    catch(e) { console.warn('cloud save falhou', e); return false; }
+  },
+  load(user, section, fallback = null) {
+    try {
+      const raw = localStorage.getItem(this._key(user, section));
+      return raw ? JSON.parse(raw) : fallback;
+    } catch(e) { return fallback; }
+  },
+  remove(user, section) { localStorage.removeItem(this._key(user, section)); }
+};
+
+const ACCOUNTS_KEY = 'asteria_accounts_v1';
+const SESSION_KEY = 'asteria_session_v1';
+
+function hashPass(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return 'h' + Math.abs(h).toString(36);
+}
+function loadAccounts() { try { return JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '{}'); } catch { return {}; } }
+function saveAccounts(a) { localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(a)); }
+function getSession() { try { return JSON.parse(localStorage.getItem(SESSION_KEY) || 'null'); } catch { return null; } }
+function setSession(s) { localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+function clearSession() { localStorage.removeItem(SESSION_KEY); }
+
+/* ============================================================
+   UTILITÁRIOS
+============================================================ */
+function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function horaAtual() { const d=new Date(); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function formatarData(iso){ const d=new Date(iso),m=Math.floor((Date.now()-d)/60000); if(m<1)return'agora'; if(m<60)return m+' min atrás'; const h=Math.floor(m/60); if(h<24)return h+' h atrás'; const dias=Math.floor(h/24); if(dias<7)return dias+' d atrás'; return d.toLocaleDateString('pt-BR'); }
+function parseRichText(t){ const s=escapeHtml(t); return s.replace(/(^|\s)(#[\p{L}\p{N}_]+)/gu,(m,sp,tag)=>`${sp}<span class="hashtag" data-hashtag="${tag.slice(1)}">${tag}</span>`).replace(/(^|\s)(@[\p{L}\p{N}_.]+)/gu,(m,sp,men)=>`${sp}<span class="mention" data-mention="${men.slice(1)}">${men}</span>`); }
+function extrairHashtags(t){ const re=/#([\p{L}\p{N}_]+)/gu,out=new Set(); let m; while((m=re.exec(t))!==null) out.add(m[1].toLowerCase()); return [...out]; }
+
+/* ============================================================
+   TEMA
+============================================================ */
+const THEME_KEY='asteria_theme_v1';
+function aplicarTema(t){ document.documentElement.setAttribute('data-theme',t); const i=document.querySelector('#themeToggle i'); if(i) i.className=t==='dark'?'fas fa-moon':'fas fa-sun'; localStorage.setItem(THEME_KEY,t); }
+aplicarTema(localStorage.getItem(THEME_KEY) || (window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
+document.getElementById('themeToggle').addEventListener('click',()=>{ const t=document.documentElement.getAttribute('data-theme'); aplicarTema(t==='dark'?'light':'dark'); });
+
+/* ============================================================
+   AUTH
+============================================================ */
+const authScreen=document.getElementById('authScreen');
+const appEl=document.getElementById('app');
+const loginForm=document.getElementById('loginForm');
+const signupForm=document.getElementById('signupForm');
+const authError=document.getElementById('authError');
+document.getElementById('tabLogin').addEventListener('click',()=>{document.getElementById('tabLogin').classList.add('active');document.getElementById('tabSignup').classList.remove('active');loginForm.style.display='flex';signupForm.style.display='none';authError.classList.remove('show');});
+document.getElementById('tabSignup').addEventListener('click',()=>{document.getElementById('tabSignup').classList.add('active');document.getElementById('tabLogin').classList.remove('active');loginForm.style.display='none';signupForm.style.display='flex';authError.classList.remove('show');});
+
+signupForm.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  authError.classList.remove('show');
+  const nome=document.getElementById('signupName').value.trim();
+  const user=document.getElementById('signupUser').value.trim().toLowerCase().replace(/^@+/,'').replace(/\s+/g,'');
+  const email=document.getElementById('signupEmail').value.trim();
+  const p1=document.getElementById('signupPass').value;
+  const p2=document.getElementById('signupPass2').value;
+  const showErr=(m)=>{authError.textContent=m;authError.classList.add('show');};
+  if(!nome) return showErr('Informe seu nome.');
+  if(!user || !/^[a-z0-9._]{2,24}$/.test(user)) return showErr('Usuário inválido (2-24 letras, números, . _).');
+  if(!email || !/^\S+@\S+\.\S+$/.test(email)) return showErr('E-mail inválido.');
+  if(p1.length<6) return showErr('A senha precisa de pelo menos 6 caracteres.');
+  if(p1!==p2) return showErr('As senhas não coincidem.');
+  const accounts=loadAccounts();
+  if(accounts[user]) return showErr('Este usuário já existe.');
+  accounts[user]={ nome, email, pass:hashPass(p1), criado:new Date().toISOString() };
+  saveAccounts(accounts);
+  Cloud.save(user,'profile',{ name:nome, at:'@'+user, bio:'', avatar:null, banner:null });
+  Cloud.save(user,'posts',[]);
+  Cloud.save(user,'drafts',{blogs:[],profile:null});
+  Cloud.save(user,'chats',null);
+  Cloud.save(user,'notifs',[]);
+  setSession({user});
+  entrarNoApp();
+});
+
+loginForm.addEventListener('submit',(e)=>{
+  e.preventDefault();
+  authError.classList.remove('show');
+  const u=document.getElementById('loginUser').value.trim().toLowerCase().replace(/^@+/,'');
+  const p=document.getElementById('loginPass').value;
+  const accounts=loadAccounts();
+  if(!accounts[u] || accounts[u].pass!==hashPass(p)) { authError.textContent='Usuário ou senha incorretos.'; authError.classList.add('show'); return; }
+  setSession({user:u});
+  entrarNoApp();
+});
+
+/* ============================================================
+   ESTADO GLOBAL
+============================================================ */
+let CURRENT_USER=null;
+let profile={}, posts=[], drafts={blogs:[],profile:null}, conversas=[], notificacoes=[];
+let editando=false;
+let notifPanelAberto=false;
+
+function entrarNoApp(){
+  const s=getSession();
+  if(!s || !loadAccounts()[s.user]) { authScreen.style.display='flex'; appEl.style.display='none'; return; }
+  CURRENT_USER=s.user;
+  authScreen.style.display='none';
+  appEl.style.display='flex';
+  carregarTudo();
+}
+
+function carregarTudo(){
+  const acc=loadAccounts()[CURRENT_USER];
+  profile = Cloud.load(CURRENT_USER,'profile',{ name:acc?acc.nome:'Usuário', at:'@'+CURRENT_USER, bio:'', avatar:null, banner:null });
+  posts = Cloud.load(CURRENT_USER,'posts',[]);
+  drafts = Cloud.load(CURRENT_USER,'drafts',{blogs:[],profile:null});
+  if(!drafts.blogs) drafts.blogs=[];
+  conversas = Cloud.load(CURRENT_USER,'chats', null);
+  if(!conversas || !conversas.length) {
+    conversas = [
+      { id:'luna', nome:'Luna Andrade', icone:'fa-user-astronaut', naoLidas:0, mensagens:[{de:'them',texto:'Oi! ✨',hora:'09:12'}] },
+      { id:'orion', nome:'Orion Black', icone:'fa-user-secret', naoLidas:0, mensagens:[{de:'them',texto:'Vamos colaborar?',hora:'08:40'}] },
+      { id:'nova', nome:'Nova Costa', icone:'fa-user-circle', naoLidas:0, mensagens:[{de:'them',texto:'Enviei as fotos 🖼️',hora:'ontem'}] }
+    ];
+    Cloud.save(CURRENT_USER,'chats',conversas);
+  }
+  notificacoes = Cloud.load(CURRENT_USER,'notifs', []);
+  if(notificacoes.length===0){
+    notificacoes = [
+      { id:'n_welcome', tipo:'sistema', titulo:'Bem-vindo(a) à Astéria!', texto:'Sua conta está pronta. Explore, crie e conecte-se.', tempo:new Date().toISOString(), lida:false },
+      { id:'n_tip', tipo:'dica', titulo:'Dica estelar', texto:'Use #hashtags para ser descoberto por outros exploradores.', tempo:new Date().toISOString(), lida:false }
+    ];
+    Cloud.save(CURRENT_USER,'notifs',notificacoes);
+  }
+
+  document.getElementById('userChipName').textContent = profile.name || CURRENT_USER;
+  const chipAv=document.getElementById('userChipAvatar');
+  if(profile.avatar){ chipAv.innerHTML=`<img src="${profile.avatar}">`; }
+  else { chipAv.innerHTML=`<i class="fas fa-user-astronaut"></i>`; }
+
+  renderPerfil();
+  renderModo();
+  renderFeed();
+  renderChatList();
+  renderBlogDrafts();
+  renderProfileDraft();
+  atualizarBadgeNotificacoes();
+}
+
+/* ============================================================
+   NOTIFICAÇÕES
+============================================================ */
+function salvarNotifs(){ Cloud.save(CURRENT_USER,'notifs',notificacoes); }
+
+function adicionarNotificacao(tipo, titulo, texto){
+  const n = { id:'n_'+Date.now()+'_'+Math.random().toString(36).slice(2,6), tipo, titulo, texto, tempo:new Date().toISOString(), lida:false };
+  notificacoes.unshift(n);
+  salvarNotifs();
+  atualizarBadgeNotificacoes();
+  if(notifPanelAberto) renderNotifPanel();
+}
+
+function contarNaoLidas(){ return notificacoes.filter(n=>!n.lida).length; }
+
+function atualizarBadgeNotificacoes(){
+  const badge = document.getElementById('notifBadge');
+  const count = contarNaoLidas();
+  if(count > 0){ badge.textContent = count > 9 ? '9+' : count; badge.style.display = 'inline-block'; }
+  else { badge.style.display = 'none'; }
+}
+
+function iconeNotif(tipo){
+  const map = { sistema:'fa-star', dica:'fa-lightbulb', curtida:'fa-heart', comentario:'fa-comment', mensagem:'fa-comment-dots', seguidor:'fa-user-plus', post:'fa-feather-alt', denuncia:'fa-flag', perfil:'fa-user-astronaut' };
+  return map[tipo] || 'fa-bell';
+}
+
+function renderNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  if(!panel) return;
+  const list = panel.querySelector('#notifList');
+  list.innerHTML = '';
+  if(notificacoes.length === 0){
+    list.innerHTML = '<div class="notif-empty"><i class="fas fa-bell-slash"></i>Nenhuma notificação por aqui.<br>Quando algo acontecer, você verá aqui.</div>';
+    return;
+  }
+  notificacoes.forEach(n=>{
+    const el = document.createElement('div');
+    el.className = 'notif-item' + (n.lida ? '' : ' unread');
+    el.innerHTML = `
+      <div class="notif-icon"><i class="fas ${iconeNotif(n.tipo)}"></i></div>
+      <div class="notif-content">
+        <h4>${escapeHtml(n.titulo)}</h4>
+        <p>${escapeHtml(n.texto)}</p>
+        <span class="notif-time">${formatarData(n.tempo)}</span>
+      </div>
+      ${n.lida ? '' : '<button class="notif-mark-btn" title="Marcar como lida"><i class="fas fa-check"></i></button>'}
+    `;
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('.notif-mark-btn')){
+        e.stopPropagation();
+        n.lida = true; salvarNotifs(); atualizarBadgeNotificacoes(); renderNotifPanel();
+        return;
+      }
+      if(!n.lida){ n.lida = true; salvarNotifs(); atualizarBadgeNotificacoes(); }
+      if(n.tipo === 'mensagem'){ document.querySelector('[data-tab="chats"]').click(); }
+      else if(n.tipo === 'post' || n.tipo === 'curtida' || n.tipo === 'comentario'){ document.querySelector('[data-tab="feed"]').click(); }
+      else if(n.tipo === 'perfil'){ document.querySelector('[data-tab="profile"]').click(); }
+      fecharNotifPanel();
+    });
+    list.appendChild(el);
+  });
+}
+
+function abrirNotifPanel(){
+  if(notifPanelAberto){ fecharNotifPanel(); return; }
+  const panel = document.createElement('div');
+  panel.className = 'notif-panel';
+  panel.id = 'notifPanel';
+  panel.innerHTML = `
+    <div class="notif-panel-header">
+      <h3><i class="fas fa-bell"></i> Notificações</h3>
+      <div class="notif-panel-actions">
+        <button id="markAllRead">Marcar todas como lidas</button>
+        <button id="clearAllNotifs">Limpar</button>
+      </div>
+    </div>
+    <div class="notif-list" id="notifList"></div>
+  `;
+  document.body.appendChild(panel);
+  notifPanelAberto = true;
+  renderNotifPanel();
+
+  panel.querySelector('#markAllRead').addEventListener('click', ()=>{
+    notificacoes.forEach(n=>n.lida = true);
+    salvarNotifs(); atualizarBadgeNotificacoes(); renderNotifPanel();
+  });
+  panel.querySelector('#clearAllNotifs').addEventListener('click', ()=>{
+    if(!confirm('Limpar todas as notificações?')) return;
+    notificacoes = []; salvarNotifs(); atualizarBadgeNotificacoes(); renderNotifPanel();
+  });
+
+  setTimeout(()=>{ document.addEventListener('click', foraNotifListener); }, 0);
+}
+function fecharNotifPanel(){
+  const panel = document.getElementById('notifPanel');
+  if(panel) panel.remove();
+  notifPanelAberto = false;
+  document.removeEventListener('click', foraNotifListener);
+}
+function foraNotifListener(e){
+  const panel = document.getElementById('notifPanel');
+  const btn = document.getElementById('notifBtn');
+  if(!panel) return;
+  if(panel.contains(e.target) || (btn && btn.contains(e.target))) return;
+  fecharNotifPanel();
+}
+document.getElementById('notifBtn').addEventListener('click', (e)=>{ e.stopPropagation(); abrirNotifPanel(); });
+
+/* ============================================================
+   ABAS
+============================================================ */
+const tabs=document.querySelectorAll('.tab-btn');
+const sections={ feed:document.getElementById('feed-section'), chats:document.getElementById('chats-section'), blog:document.getElementById('blog-section'), profile:document.getElementById('profile-section') };
+tabs.forEach(t=>t.addEventListener('click',()=>{
+  tabs.forEach(x=>x.classList.remove('active')); t.classList.add('active');
+  Object.values(sections).forEach(s=>s.classList.remove('active'));
+  sections[t.dataset.tab].classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+
+/* ============================================================
+   USER CHIP / PERFIL
+============================================================ */
+document.getElementById('userChip').addEventListener('click',()=>{
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  overlay.innerHTML=`
+    <div class="modal-box user-modal-box">
+      <button class="modal-close" id="closeChip" style="position:absolute;top:14px;right:14px;">✕</button>
+      <div class="user-modal-avatar">${profile.avatar?`<img src="${profile.avatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`:'<i class="fas fa-user-astronaut"></i>'}</div>
+      <h3>${escapeHtml(profile.name||'Usuário')}</h3>
+      <div class="at">${escapeHtml(profile.at||'@'+CURRENT_USER)}</div>
+      <p style="margin-top:14px;font-size:0.85rem;color:var(--text-soft);">Conta conectada: <strong style="color:var(--text-main);">${escapeHtml(CURRENT_USER)}</strong></p>
+      <button class="btn-primary" id="goProfileBtn" style="margin-top:14px;width:100%;justify-content:center; padding:12px; border-radius:40px;"><i class="fas fa-user-astronaut"></i> Ver meu perfil</button>
+      <button class="btn-secondary" id="logoutBtn" style="margin-top:8px;width:100%;justify-content:center; padding:12px; border-radius:40px;"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+  overlay.querySelector('#closeChip').addEventListener('click',()=>overlay.remove());
+  overlay.querySelector('#goProfileBtn').addEventListener('click',()=>{ overlay.remove(); document.querySelector('[data-tab="profile"]').click(); });
+  overlay.querySelector('#logoutBtn').addEventListener('click',()=>{ clearSession(); overlay.remove(); entrarNoApp(); });
+});
+
+/* ============================================================
+   SETTINGS MODAL
+============================================================ */
+document.getElementById('settingsBtn').addEventListener('click',()=>{
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  overlay.innerHTML=`
+    <div class="modal-box settings-modal-box">
+      <button class="modal-close" id="closeSettings" style="position:absolute;top:14px;right:14px;">✕</button>
+      <h2><i class="fas fa-cog" style="color:var(--accent);"></i> Configurações</h2>
+      <p class="sub">Gerencie sua conta e segurança.</p>
+      <div class="settings-tab-row">
+        <button class="settings-tab active" id="stTabPass">Definir senha</button>
+        <button class="settings-tab" id="stTabReport">Denúncias</button>
+      </div>
+      <div id="settingsContent"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const close=()=>overlay.remove();
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+  overlay.querySelector('#closeSettings').addEventListener('click',close);
+
+  const content=overlay.querySelector('#settingsContent');
+  const tabPass=overlay.querySelector('#stTabPass');
+  const tabReport=overlay.querySelector('#stTabReport');
+
+  function renderPassTab(){
+    content.innerHTML=`
+      <div class="settings-form" id="passForm">
+        <div class="field-group"><label>E-mail cadastrado</label><input type="email" id="setEmail" placeholder="Seu e-mail" value="${escapeHtml(loadAccounts()[CURRENT_USER]?.email||'')}"></div>
+        <div class="field-group"><label>Nova senha (mín. 6 caracteres)</label><input type="password" id="setNewPass" placeholder="Digite a nova senha"></div>
+        <div class="field-group"><label>Confirmar nova senha</label><input type="password" id="setNewPass2" placeholder="Repita a nova senha"></div>
+        <button class="btn-primary" id="setPassBtn" style="justify-content:center; padding:12px; border-radius:40px;"><i class="fas fa-envelope"></i> Enviar link de redefinição</button>
+        <div class="settings-msg" id="passMsg"></div>
+        <p style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;"><i class="fas fa-info-circle"></i> Demo: o link é simulado. Em produção, um e-mail seria enviado.</p>
+      </div>`;
+    const msg=content.querySelector('#passMsg');
+    content.querySelector('#setPassBtn').addEventListener('click',()=>{
+      const email=content.querySelector('#setEmail').value.trim();
+      const p1=content.querySelector('#setNewPass').value;
+      const p2=content.querySelector('#setNewPass2').value;
+      msg.classList.remove('show','success','error');
+      if(!email || !/^\S+@\S+\.\S+$/.test(email)){ msg.textContent='Informe um e-mail válido.'; msg.classList.add('show','error'); return; }
+      if(p1.length<6){ msg.textContent='A nova senha precisa de pelo menos 6 caracteres.'; msg.classList.add('show','error'); return; }
+      if(p1!==p2){ msg.textContent='As senhas não coincidem.'; msg.classList.add('show','error'); return; }
+      const accounts=loadAccounts();
+      if(!accounts[CURRENT_USER]){ msg.textContent='Conta não encontrada.'; msg.classList.add('show','error'); return; }
+      accounts[CURRENT_USER].pass=hashPass(p1);
+      accounts[CURRENT_USER].email=email;
+      saveAccounts(accounts);
+      msg.textContent='✅ Senha redefinida com sucesso (simulação de link por e-mail).';
+      msg.classList.add('show','success');
+      adicionarNotificacao('sistema','Senha atualizada','Sua senha foi redefinida com sucesso.');
+    });
+  }
+
+  function renderReportTab(){
+    content.innerHTML=`
+      <div class="settings-form" id="reportForm">
+        <div class="field-group"><label>Tipo de denúncia</label>
+          <select id="reportType">
+            <option value="assedio">Assédio ou bullying</option>
+            <option value="spam">Spam ou conteúdo enganoso</option>
+            <option value="odio">Discurso de ódio</option>
+            <option value="violencia">Violência ou ameaça</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="field-group"><label>Descrição do ocorrido</label><textarea id="reportDesc" placeholder="Descreva o que aconteceu..."></textarea></div>
+        <div class="field-group"><label>Link ou usuário envolvido (opcional)</label><input type="text" id="reportLink" placeholder="Ex: @usuario ou URL do post"></div>
+        <button class="btn-primary" id="sendReportBtn" style="justify-content:center; padding:12px; border-radius:40px;"><i class="fas fa-flag"></i> Enviar denúncia</button>
+        <div class="settings-msg" id="reportMsg"></div>
+        <p style="font-size:0.72rem; color:var(--text-muted); margin-top:4px;"><i class="fas fa-shield-alt"></i> Sua denúncia é anônima e será analisada pela equipe.</p>
+      </div>`;
+    const msg=content.querySelector('#reportMsg');
+    content.querySelector('#sendReportBtn').addEventListener('click',()=>{
+      const tipo=content.querySelector('#reportType').value;
+      const desc=content.querySelector('#reportDesc').value.trim();
+      const link=content.querySelector('#reportLink').value.trim();
+      msg.classList.remove('show','success','error');
+      if(!desc){ msg.textContent='Por favor, descreva o ocorrido.'; msg.classList.add('show','error'); return; }
+      const reports=Cloud.load(CURRENT_USER,'reports',[]);
+      reports.push({tipo, desc, link, data:new Date().toISOString(), status:'pendente'});
+      Cloud.save(CURRENT_USER,'reports',reports);
+      msg.textContent='✅ Denúncia enviada. Obrigado por ajudar a manter a comunidade segura.';
+      msg.classList.add('show','success');
+      content.querySelector('#reportDesc').value='';
+      content.querySelector('#reportLink').value='';
+      adicionarNotificacao('denuncia','Denúncia registrada','Recebemos sua denúncia e nossa equipe irá analisar em breve.');
+    });
+  }
+
+  tabPass.addEventListener('click',()=>{ tabPass.classList.add('active'); tabReport.classList.remove('active'); renderPassTab(); });
+  tabReport.addEventListener('click',()=>{ tabReport.classList.add('active'); tabPass.classList.remove('active'); renderReportTab(); });
+  renderPassTab();
+});
+
+/* ============================================================
+   FEED
+============================================================ */
+const feedGrid=document.getElementById('feedGrid');
+const feedCount=document.getElementById('feedCount');
+const activeFilterEl=document.getElementById('activeFilter');
+const activeFilterLabel=document.getElementById('activeFilterLabel');
+let filtroAtivo=null;
+
+function aplicarFiltro(tipo,valor){
+  filtroAtivo={tipo,valor};
+  const s=document.getElementById('globalSearch');
+  if(tipo==='hashtag'){ activeFilterLabel.textContent='#'+valor; activeFilterEl.style.display='block'; s.value=''; renderFeed(''); }
+  else if(tipo==='mention'){ activeFilterLabel.textContent='@'+valor; activeFilterEl.style.display='block'; s.value=''; renderFeed(''); }
+  else { activeFilterEl.style.display='none'; filtroAtivo=null; renderFeed(s.value); }
+}
+document.getElementById('clearFilter').addEventListener('click',()=>aplicarFiltro('texto'));
+
+function renderFeed(filtro=''){
+  const term=(filtro||'').toLowerCase().trim();
+  let vis=posts.slice();
+  let usuariosEncontrados = [];
+
+  if(filtroAtivo&&filtroAtivo.tipo==='hashtag') vis=vis.filter(p=>extrairHashtags(p.titulo+' '+p.descricao).includes(filtroAtivo.valor.toLowerCase()));
+  else if(filtroAtivo&&filtroAtivo.tipo==='mention'){ const re=new RegExp('@'+filtroAtivo.valor.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','i'); vis=vis.filter(p=>re.test(p.titulo+' '+p.descricao)); }
+  else if(term){
+    if(term.startsWith('@')){
+      const termoUser = term.slice(1);
+      const todosUsuarios = [
+        ...Object.entries(USUARIOS_CONHECIDOS).map(([at, dados]) => ({ at, nome: dados.nome, bio: dados.bio, avatar: null, postsCount: 0 })),
+        ...(profile.at && profile.at.toLowerCase().includes(termoUser) ? [{ at: profile.at.replace(/^@/, ''), nome: profile.name, bio: profile.bio, avatar: profile.avatar, postsCount: postsDoUsuario().length }] : []),
+        ...conversas.map(c => ({ at: c.nome.toLowerCase().replace(/\s+/g,''), nome: c.nome, bio: 'Explorador estelar', avatar: null, postsCount: 0 }))
+      ];
+      const vistos = new Set();
+      usuariosEncontrados = todosUsuarios.filter(u => {
+        const at = u.at.toLowerCase();
+        if (vistos.has(at)) return false;
+        if (at.includes(termoUser)) { vistos.add(at); return true; }
+        return false;
+      });
+    } else {
+      vis=vis.filter(p=>{
+        const txt=(p.titulo+' '+p.descricao+' '+(p.autor||'')).toLowerCase();
+        if(txt.includes(term)) return true;
+        if(term.startsWith('#')) return extrairHashtags(p.titulo+' '+p.descricao).includes(term.slice(1));
+        return false;
+      });
+      if(term.length >= 2){
+        const todos = Object.entries(USUARIOS_CONHECIDOS).map(([at, d]) => ({ at, nome: d.nome, bio: d.bio, avatar: null, postsCount: 0 }));
+        Object.keys(loadAccounts()).forEach(acc => {
+          if(acc !== CURRENT_USER){
+            todos.push({ at: acc, nome: acc, bio: 'Usuário Astéria', avatar: null, postsCount: 0 });
+          }
+        });
+        const vistos = new Set();
+        usuariosEncontrados = todos.filter(u => {
+          const at = u.at.toLowerCase();
+          if(vistos.has(at)) return false;
+          if(at.includes(term) || u.nome.toLowerCase().includes(term)){ vistos.add(at); return true; }
+          return false;
+        });
+      }
+    }
+  }
+
+  vis.sort((a,b)=>new Date(b.data)-new Date(a.data));
+  feedGrid.innerHTML='';
+
+  if (usuariosEncontrados.length > 0) {
+    usuariosEncontrados.forEach(u => {
+      const card = document.createElement('div');
+      card.className = 'user-result-card';
+      const avatarHtml = u.avatar ? `<img src="${u.avatar}">` : `<i class="fas fa-user-astronaut"></i>`;
+      card.innerHTML = `
+        <div class="user-result-avatar">${avatarHtml}</div>
+        <div class="user-result-body">
+          <h3>${escapeHtml(u.nome || u.at)}</h3>
+          <div class="at">@${escapeHtml(u.at)}</div>
+          <p>${escapeHtml(u.bio || 'Explorador estelar')}</p>
+          <button class="btn-view" data-user="${escapeHtml(u.at)}"><i class="fas fa-user-astronaut"></i> Ver perfil</button>
+        </div>
+      `;
+      card.querySelector('.btn-view').addEventListener('click', (e) => {
+        e.stopPropagation();
+        abrirPerfilPublico(u.at);
+      });
+      card.addEventListener('click', () => abrirPerfilPublico(u.at));
+      feedGrid.appendChild(card);
+    });
+  }
+
+  if (!vis.length && !usuariosEncontrados.length) {
+    feedGrid.innerHTML = `<div class="empty-feed"><i class="fas fa-satellite"></i><p>Nenhum resultado encontrado.</p></div>`;
+    feedCount.textContent = `0 posts`;
+    return;
+  }
+
+  vis.forEach(post => {
+    const card=document.createElement('div'); card.className='story-card';
+    const img=post.imagens&&post.imagens[0];
+    const media=img?`<img src="${img}">`:`<i class="fas ${post.icone||'fa-star'}"></i>`;
+    const badgeNew=(Date.now()-new Date(post.data))<3600e3*12?'<span class="badge-new">NOVO</span>':'';
+    const tags=extrairHashtags(post.titulo+' '+post.descricao);
+    const tagsHtml=tags.length?`<div class="card-tags">${tags.map(t=>`<span class="tag-chip" data-hashtag="${t}">#${t}</span>`).join('')}</div>`:'';
+    const podeApagar = post.autor===profile.name;
+    const podeEditar = post.autor===profile.name;
+    card.innerHTML=`
+      ${podeEditar?`<button class="edit-post-btn" title="Editar post" data-edit="${post.id}"><i class="fas fa-pen"></i></button>`:''}
+      <button class="delete-post-btn" title="Apagar" data-del="${post.id}"><i class="fas fa-trash"></i></button>
+      <div class="card-media">${badgeNew}${media}</div>
+      <div class="card-body">
+        <h3>${parseRichText(post.titulo)}</h3>
+        <p>${parseRichText(post.descricao)}</p>
+        ${tagsHtml}
+        <div class="card-meta"><span><i class="fas fa-eye"></i>${post.views??0}</span><span><i class="fas fa-heart"></i>${post.likes??0}</span><span style="margin-left:auto;font-size:0.7rem;">${formatarData(post.data)}</span></div>
+        <div style="margin-top:8px;font-size:0.72rem;color:var(--text-soft);display:flex;align-items:center;gap:5px;"><i class="fas fa-user-astronaut" style="color:var(--accent);"></i> ${escapeHtml(post.autor||'Anônimo')}</div>
+      </div>`;
+    if(!podeApagar) card.querySelector('.delete-post-btn').style.display='none';
+
+    card.addEventListener('click',(e)=>{
+      const tag=e.target.closest('[data-hashtag]'); const men=e.target.closest('[data-mention]');
+      const del=e.target.closest('[data-del]'); const edit=e.target.closest('[data-edit]');
+      if(edit){ e.stopPropagation(); abrirEditorBlog(null, post.id); return; }
+      if(del){ e.stopPropagation(); apagarPost(post.id); return; }
+      if(tag){ e.stopPropagation(); aplicarFiltro('hashtag',tag.dataset.hashtag); return; }
+      if(men){ e.stopPropagation(); abrirPerfilPublico(men.dataset.mention); return; }
+      post.views=(post.views||0)+1; salvarPosts(); renderFeed(document.getElementById('globalSearch').value); atualizarStatsPerfil(); abrirPostModal(post);
+    });
+    feedGrid.appendChild(card);
+  });
+  feedCount.textContent=`${vis.length} post${vis.length!==1?'s':''}${usuariosEncontrados.length?` · ${usuariosEncontrados.length} usuário${usuariosEncontrados.length!==1?'s':''}`:''}`;
+}
+
+function apagarPost(id){
+  if(!confirm('Apagar esta publicação? Esta ação não pode ser desfeita.')) return;
+  posts = posts.filter(p=>p.id!==id);
+  salvarPosts();
+  renderFeed(document.getElementById('globalSearch').value);
+  atualizarStatsPerfil();
+  renderPostsDoUsuario();
+  adicionarNotificacao('post','Publicação removida','Uma das suas publicações foi apagada.');
+}
+
+function abrirPostModal(post){
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  const podeApagar = post.autor===profile.name;
+  const podeEditar = post.autor===profile.name;
+  overlay.innerHTML=`
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h2 style="font-size:1.25rem;">${parseRichText(post.titulo)}</h2>
+          <div style="font-size:0.78rem;color:var(--text-soft);margin-top:4px;">Por ${escapeHtml(post.autor||'—')} · ${formatarData(post.data)}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          ${podeEditar?`<button class="modal-close" id="modalEditPost" title="Editar" style="color:var(--accent);"><i class="fas fa-pen"></i></button>`:''}
+          ${podeApagar?`<button class="modal-close" id="modalDelPost" title="Apagar" style="color:var(--danger);"><i class="fas fa-trash"></i></button>`:''}
+          <button class="modal-close" id="closeModal">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div style="line-height:1.6;color:var(--text-main);margin-bottom:20px;white-space:pre-wrap;">${post.descricao}</div>
+        ${(post.imagens||[]).map(s=>`<img src="${s}" style="width:100%;border-radius:16px;margin-bottom:14px;">`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{
+    if(e.target===overlay){ overlay.remove(); return; }
+    const tag=e.target.closest('[data-hashtag]'); const men=e.target.closest('[data-mention]');
+    if(tag){ overlay.remove(); aplicarFiltro('hashtag',tag.dataset.hashtag); document.querySelector('[data-tab="feed"]').click(); }
+    if(men){ overlay.remove(); abrirPerfilPublico(men.dataset.mention); }
+  });
+  overlay.querySelector('#closeModal').addEventListener('click',()=>overlay.remove());
+  const delBtn=overlay.querySelector('#modalDelPost');
+  if(delBtn) delBtn.addEventListener('click',()=>{ overlay.remove(); apagarPost(post.id); });
+  const editBtn=overlay.querySelector('#modalEditPost');
+  if(editBtn) editBtn.addEventListener('click',()=>{ overlay.remove(); abrirEditorBlog(null, post.id); });
+}
+
+const USUARIOS_CONHECIDOS={
+  'alexasteria':{nome:'Alex Estrela',bio:'Explorador de nebulosas ✨'},
+  'lunaandrade':{nome:'Luna Andrade',bio:'Escritora de contos cósmicos 🌌'},
+  'orionblack':{nome:'Orion Black',bio:'Crônicas espaciais 🚀'},
+  'novacosta':{nome:'Nova Costa',bio:'Fotógrafa astral 📷'}
+};
+function abrirPerfilPublico(at){
+  const u=USUARIOS_CONHECIDOS[at.toLowerCase()]||{nome:at,bio:'Usuário da plataforma Astéria.'};
+  const overlay=document.createElement('div'); overlay.className='modal-overlay';
+  overlay.innerHTML=`<div class="modal-box user-modal-box"><button class="modal-close" id="closeUser" style="position:absolute;top:14px;right:14px;">✕</button><div class="user-modal-avatar"><i class="fas fa-user-astronaut"></i></div><h3>${escapeHtml(u.nome)}</h3><div class="at">@${escapeHtml(at)}</div><p>${escapeHtml(u.bio)}</p></div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+  overlay.querySelector('#closeUser').addEventListener('click',()=>overlay.remove());
+}
+
+document.getElementById('globalSearch').addEventListener('input',e=>{ if(filtroAtivo){filtroAtivo=null;activeFilterEl.style.display='none';} renderFeed(e.target.value); });
+
+function salvarPosts(){ Cloud.save(CURRENT_USER,'posts',posts); }
+
+/* ============================================================
+   CHATS — TELA CHEIA
+============================================================ */
+let conversaAtiva=null;
+const chatListEl=document.getElementById('chatList');
+
+function salvarChats(){ Cloud.save(CURRENT_USER,'chats',conversas); }
+function ultimaMensagem(c){ const m=c.mensagens[c.mensagens.length-1]; if(!m)return{texto:'Sem mensagens'}; return{texto:(m.de==='me'?'Você: ':'')+m.texto}; }
+function renderChatList(){
+  chatListEl.innerHTML='';
+  conversas.forEach(c=>{
+    const u=ultimaMensagem(c);
+    const el=document.createElement('div'); el.className='chat-item'+(conversaAtiva===c.id?' active':'');
+    el.innerHTML=`<div class="chat-avatar"><i class="fas ${c.icone}"></i></div><div class="chat-info"><h4>${c.nome}${c.naoLidas?`<span class="unread-badge">${c.naoLidas}</span>`:''}</h4><span>${escapeHtml(u.texto)}</span></div>`;
+    el.addEventListener('click',()=>abrirConversaFullscreen(c.id));
+    chatListEl.appendChild(el);
+  });
+}
+
+let fsOverlay = null;
+
+function abrirConversaFullscreen(id){
+  const c=conversas.find(x=>x.id===id); if(!c)return;
+  conversaAtiva=id; c.naoLidas=0; salvarChats();
+  if(fsOverlay) fsOverlay.remove();
+
+  fsOverlay = document.createElement('div');
+  fsOverlay.className = 'chat-panel-fullscreen';
+  fsOverlay.innerHTML = `
+    <div class="chat-fullscreen-header">
+      <div class="chat-avatar"><i class="fas ${c.icone}"></i></div>
+      <div>
+        <h3>${escapeHtml(c.nome)}</h3>
+        <div class="status"><i class="fas fa-circle" style="font-size:0.5rem;"></i> online</div>
+      </div>
+      <button class="delete-chat-btn" id="fsDeleteChatBtn" title="Apagar conversa"><i class="fas fa-trash-alt"></i></button>
+      <button class="chat-close-btn" id="fsCloseChat" title="Fechar conversa"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="chat-fullscreen-messages" id="fsChatMessages"></div>
+    <div class="chat-fullscreen-input-bar">
+      <input type="text" id="fsChatInput" placeholder="Escreva uma mensagem..." maxlength="500">
+      <button class="send-btn" id="fsSendBtn" title="Enviar"><i class="fas fa-paper-plane"></i></button>
+    </div>
+  `;
+  document.body.appendChild(fsOverlay);
+
+  const fsChatInput = fsOverlay.querySelector('#fsChatInput');
+  const fsSendBtn = fsOverlay.querySelector('#fsSendBtn');
+  const msgContainer = fsOverlay.querySelector('#fsChatMessages');
+
+  function renderMensagensFS(){
+    msgContainer.innerHTML = '';
+    c.mensagens.forEach((m, idx)=>{
+      const d=document.createElement('div'); d.className='msg '+(m.de==='me'?'me':'them');
+      d.innerHTML = `
+        ${escapeHtml(m.texto)}
+        <span class="msg-time">${m.hora}</span>
+        <button class="msg-delete-btn" data-msg-index="${idx}" title="Apagar mensagem"><i class="fas fa-times"></i></button>
+      `;
+      msgContainer.appendChild(d);
+    });
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+    msgContainer.querySelectorAll('.msg-delete-btn').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const idx = parseInt(btn.dataset.msgIndex);
+        if(confirm('Apagar esta mensagem?')){
+          c.mensagens.splice(idx, 1);
+          salvarChats();
+          renderMensagensFS();
+          renderChatList();
+        }
+      });
+    });
+  }
+  renderMensagensFS();
+
+  function enviarMensagemFS(){
+    const t = fsChatInput.value.trim(); if(!t) return;
+    c.mensagens.push({de:'me',texto:t,hora:horaAtual()});
+    fsChatInput.value=''; salvarChats(); renderMensagensFS(); renderChatList();
+  }
+  fsSendBtn.addEventListener('click', enviarMensagemFS);
+  fsChatInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); enviarMensagemFS(); } });
+
+  fsOverlay.querySelector('#fsCloseChat').addEventListener('click', ()=>{
+    fsOverlay.remove();
+    fsOverlay = null;
+    conversaAtiva = null;
+    renderChatList();
+  });
+
+  fsOverlay.querySelector('#fsDeleteChatBtn').addEventListener('click', ()=>{
+    if(confirm('Apagar esta conversa permanentemente? Todas as mensagens serão removidas.')){
+      conversas = conversas.filter(x => x.id !== id);
+      salvarChats();
+      fsOverlay.remove();
+      fsOverlay = null;
+      conversaAtiva = null;
+      renderChatList();
+    }
+  });
+
+  fsChatInput.focus();
+}
+
+/* ============================================================
+   BLOG — EDITOR EM TELA CHEIA COM FONTES ESPECIAIS
+============================================================ */
+let blogDraftsListEl = document.getElementById('blogDraftsList');
+let editorOverlay = null;
+let editorTitleEl = null;
+let editorContentEl = null;
+let editorImages = [];
+let autosaveTimer = null;
+let currentDraftId = null;
+let currentEditPostId = null;
+
+function salvarBlogDrafts(){ Cloud.save(CURRENT_USER,'drafts',drafts); }
+
+function renderBlogDrafts(){
+  blogDraftsListEl.innerHTML='';
+  if(!drafts.blogs.length){ blogDraftsListEl.innerHTML='<div class="empty-drafts"><i class="fas fa-inbox"></i>Nenhum rascunho de blog.</div>'; return; }
+  drafts.blogs.forEach(d=>{
+    const el=document.createElement('div'); el.className='draft-item';
+    let thumbHtml;
+    if(d.imagens && d.imagens.length) {
+      thumbHtml = `<img src="${d.imagens[0]}">`;
+    } else if(d.conteudo && d.conteudo.includes('<img')) {
+      const match = d.conteudo.match(/<img[^>]+src="([^"]+)"/);
+      thumbHtml = match ? `<img src="${match[1]}">` : `<i class="fas fa-feather-alt"></i>`;
+    } else {
+      thumbHtml = `<i class="fas fa-feather-alt"></i>`;
+    }
+    el.innerHTML=`
+      <div class="draft-thumb">${thumbHtml}</div>
+      <div class="draft-info">
+        <h4>${escapeHtml(d.titulo||'(sem título)')} ${d.auto?'<span style="font-size:0.65rem;color:var(--accent);">· auto</span>':''}</h4>
+        <span>${formatarData(d.atualizado)}</span>
+      </div>
+      <div class="draft-actions">
+        <button class="draft-action" title="Editar/Continuar" data-restore="${d.id}"><i class="fas fa-pen"></i></button>
+        <button class="draft-action del" title="Apagar" data-del="${d.id}"><i class="fas fa-trash"></i></button>
+      </div>`;
+    el.querySelector('[data-restore]').addEventListener('click',()=>abrirEditorBlog(d.id));
+    el.querySelector('[data-del]').addEventListener('click',()=>apagarDraftBlog(d.id));
+    blogDraftsListEl.appendChild(el);
+  });
+}
+
+function apagarDraftBlog(id){
+  if(!confirm('Apagar este rascunho?'))return;
+  drafts.blogs=drafts.blogs.filter(x=>x.id!==id);
+  salvarBlogDrafts(); renderBlogDrafts();
+}
+
+/* Lista de fontes especiais */
+const FONTES_ESPECIAIS = [
+  { label: 'Inter (padrão)', value: 'Inter, sans-serif' },
+  { label: 'Playfair Display', value: "'Playfair Display', serif" },
+  { label: 'Bebas Neue', value: "'Bebas Neue', cursive" },
+  { label: 'Pacifico', value: "'Pacifico', cursive" },
+  { label: 'Press Start 2P', value: "'Press Start 2P', cursive" },
+  { label: 'Orbitron', value: "'Orbitron', sans-serif" },
+  { label: 'Cinzel', value: "'Cinzel', serif" },
+  { label: 'Great Vibes', value: "'Great Vibes', cursive" },
+  { label: 'Permanent Marker', value: "'Permanent Marker', cursive" },
+  { label: 'Lobster', value: "'Lobster', cursive" },
+  { label: 'Rye', value: "'Rye', cursive" },
+  { label: 'Special Elite', value: "'Special Elite', cursive" },
+  { label: 'Creepster', value: "'Creepster', cursive" },
+  { label: 'Bangers', value: "'Bangers', cursive" },
+  { label: 'Monoton', value: "'Monoton', cursive" },
+  { label: 'Righteous', value: "'Righteous', cursive" },
+  { label: 'Fredoka One', value: "'Fredoka One', cursive" },
+  { label: 'Abril Fatface', value: "'Abril Fatface', cursive" },
+  { label: 'Dancing Script', value: "'Dancing Script', cursive" },
+  { label: 'Shadows Into Light', value: "'Shadows Into Light', cursive" },
+  { label: 'Caveat', value: "'Caveat', cursive" },
+  { label: 'Satisfy', value: "'Satisfy', cursive" },
+  { label: 'Kaushan Script', value: "'Kaushan Script', cursive" },
+  { label: 'Tangerine', value: "'Tangerine', cursive" },
+  { label: 'Alfa Slab One', value: "'Alfa Slab One', cursive" },
+  { label: 'Audiowide', value: "'Audiowide', cursive" },
+  { label: 'Bungee', value: "'Bungee', cursive" },
+  { label: 'Exo 2', value: "'Exo 2', sans-serif" },
+  { label: 'Megrim', value: "'Megrim', cursive" },
+  { label: 'Rubik Mono One', value: "'Rubik Mono One', sans-serif" },
+  { label: 'Silkscreen', value: "'Silkscreen', cursive" },
+  { label: 'VT323', value: "'VT323', monospace" },
+  { label: 'Zilla Slab Highlight', value: "'Zilla Slab Highlight', serif" }
+];
+
+function abrirEditorBlog(draftId = null, postId = null){
+  if(editorOverlay) editorOverlay.remove();
+
+  let draftData = null;
+  let isEditingPost = false;
+  currentEditPostId = null;
+  currentDraftId = null;
+
+  if(postId) {
+    const post = posts.find(p => p.id === postId);
+    if(!post) return;
+    isEditingPost = true;
+    currentEditPostId = postId;
+    draftData = {
+      titulo: post.titulo,
+      conteudo: post.descricao,
+      imagens: [...(post.imagens || [])]
+    };
+  } else if(draftId) {
+    draftData = drafts.blogs.find(d => d.id === draftId);
+    currentDraftId = draftData ? draftData.id : null;
+  }
+
+  editorImages = draftData ? [...(draftData.imagens || [])] : [];
+
+  editorOverlay = document.createElement('div');
+  editorOverlay.className = 'blog-editor-overlay';
+  editorOverlay.innerHTML = `
+    <div class="blog-editor-header">
+      <h2><i class="fas fa-feather-alt"></i> ${isEditingPost ? 'Editar post' : 'Criar novo blog'}</h2>
+      <span class="autosave-hint" id="editorAutosaveHint"><i class="fas fa-cloud"></i> Rascunho salvo automaticamente</span>
+      <button class="blog-editor-close" id="closeEditorBtn" title="Fechar editor"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="blog-editor-body">
+      <div class="blog-editor-container">
+        <input type="text" class="blog-title-input" id="editorTitle" placeholder="Título do seu blog..." maxlength="120" value="${draftData ? escapeHtml(draftData.titulo||'') : ''}">
+
+        <div class="font-toolbar" id="fontToolbar">
+          <select id="fontFamilySelect" title="Fonte especial">
+            ${FONTES_ESPECIAIS.map(f => `<option value="${f.value}" style="font-family:${f.value}">${f.label}</option>`).join('')}
+          </select>
+          <select id="fontSizeSelect" title="Tamanho">
+            <option value="1">Pequeno</option>
+            <option value="3" selected>Normal</option>
+            <option value="5">Grande</option>
+            <option value="6">Muito grande</option>
+            <option value="7">Gigante</option>
+          </select>
+          <span class="separator"></span>
+          <button type="button" data-cmd="bold" title="Negrito"><i class="fas fa-bold"></i></button>
+          <button type="button" data-cmd="italic" title="Itálico"><i class="fas fa-italic"></i></button>
+          <button type="button" data-cmd="underline" title="Sublinhado"><i class="fas fa-underline"></i></button>
+          <button type="button" data-cmd="strikeThrough" title="Tachado"><i class="fas fa-strikethrough"></i></button>
+          <span class="separator"></span>
+          <button type="button" data-cmd="insertUnorderedList" title="Lista com marcadores"><i class="fas fa-list-ul"></i></button>
+          <button type="button" data-cmd="insertOrderedList" title="Lista numerada"><i class="fas fa-list-ol"></i></button>
+          <span class="separator"></span>
+          <button type="button" data-cmd="justifyLeft" title="Alinhar à esquerda"><i class="fas fa-align-left"></i></button>
+          <button type="button" data-cmd="justifyCenter" title="Centralizar"><i class="fas fa-align-center"></i></button>
+          <button type="button" data-cmd="justifyRight" title="Alinhar à direita"><i class="fas fa-align-right"></i></button>
+          <span class="separator"></span>
+          <button type="button" id="addImageBtn" title="Inserir imagem"><i class="fas fa-image"></i></button>
+        </div>
+
+        <div class="blog-content-editor" id="editorContent" contenteditable="true" data-placeholder="Escreva seu conteúdo aqui...">${draftData ? draftData.conteudo||'' : ''}</div>
+
+        <div class="media-preview-inline" id="editorMediaPreview"></div>
+
+        <div class="blog-editor-footer">
+          <button class="btn-publish" id="editorPublishBtn"><i class="fas fa-paper-plane"></i> Publicar</button>
+          <button class="btn-save-draft" id="editorSaveDraftBtn"><i class="fas fa-save"></i> Salvar rascunho</button>
+          <button class="btn-cancel" id="editorCancelBtn"><i class="fas fa-times"></i> Cancelar</button>
+          <input type="file" id="editorImageInput" accept="image/*" multiple style="display:none;">
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(editorOverlay);
+
+  editorTitleEl = editorOverlay.querySelector('#editorTitle');
+  editorContentEl = editorOverlay.querySelector('#editorContent');
+
+  // Garante que o comando de fonte use CSS (span style) em vez da tag <font>
+  try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
+
+  renderEditorImages();
+
+  const addImageBtn = editorOverlay.querySelector('#addImageBtn');
+  const imageInput = editorOverlay.querySelector('#editorImageInput');
+  addImageBtn.addEventListener('click', () => imageInput.click());
+  imageInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files || []);
+    if(!files.length) return;
+    files.forEach(f => {
+      if(!f.type.startsWith('image/')) return;
+      const r = new FileReader();
+      r.onload = (ev) => {
+        editorImages.push(ev.target.result);
+        renderEditorImages();
+        autosaveEditor();
+      };
+      r.readAsDataURL(f);
+    });
+    imageInput.value = '';
+  });
+
+  const fontFamilySelect = editorOverlay.querySelector('#fontFamilySelect');
+  fontFamilySelect.addEventListener('change', () => {
+    editorContentEl.focus();
+    document.execCommand('fontName', false, fontFamilySelect.value);
+    // Reaplica styleWithCSS para garantir
+    try { document.execCommand('styleWithCSS', false, true); } catch(e) {}
+  });
+
+  const fontSizeSelect = editorOverlay.querySelector('#fontSizeSelect');
+  fontSizeSelect.addEventListener('change', () => {
+    editorContentEl.focus();
+    document.execCommand('fontSize', false, fontSizeSelect.value);
+  });
+
+  // Aplicar fonte diretamente via selection (fallback para navegadores que ignoram execCommand)
+  editorOverlay.querySelectorAll('[data-cmd]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      editorContentEl.focus();
+      document.execCommand(btn.dataset.cmd, false, null);
+      updateToolbarState();
+    });
+  });
+
+  function updateToolbarState(){
+    editorOverlay.querySelectorAll('[data-cmd]').forEach(btn => {
+      if(document.queryCommandState(btn.dataset.cmd)) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+  }
+  editorContentEl.addEventListener('keyup', updateToolbarState);
+  editorContentEl.addEventListener('mouseup', updateToolbarState);
+  editorContentEl.addEventListener('focus', updateToolbarState);
+
+  editorTitleEl.addEventListener('input', autosaveEditor);
+  editorContentEl.addEventListener('input', autosaveEditor);
+
+  // PUBLISH
+  editorOverlay.querySelector('#editorPublishBtn').addEventListener('click', () => {
+    const titulo = editorTitleEl.value.trim();
+    const conteudoHTML = editorContentEl.innerHTML.trim();
+    if(!titulo){ alert('Dê um título.'); return; }
+    if(!conteudoHTML || conteudoHTML === '<br>'){ alert('Escreva o conteúdo.'); return; }
+
+    if(isEditingPost) {
+      const idx = posts.findIndex(p => p.id === currentEditPostId);
+      if(idx !== -1) {
+        posts[idx].titulo = titulo;
+        posts[idx].descricao = conteudoHTML;
+        posts[idx].imagens = [...editorImages];
+        salvarPosts();
+        adicionarNotificacao('post','Post atualizado','Seu post foi editado com sucesso.');
+      }
+    } else {
+      const novo = {
+        id: 'post_' + Date.now(),
+        titulo,
+        descricao: conteudoHTML,
+        imagens: [...editorImages],
+        icone: 'fa-feather-alt',
+        autor: profile.name,
+        data: new Date().toISOString(),
+        views: 0,
+        likes: 0
+      };
+      posts.unshift(novo);
+      salvarPosts();
+      adicionarNotificacao('post','Publicação criada','Seu novo blog foi publicado com sucesso.');
+    }
+
+    if(currentDraftId) {
+      drafts.blogs = drafts.blogs.filter(d => d.id !== currentDraftId);
+    } else {
+      drafts.blogs = drafts.blogs.filter(d => d.id !== 'autosave');
+    }
+    salvarBlogDrafts();
+    renderBlogDrafts();
+
+    fecharEditor();
+    renderFeed(document.getElementById('globalSearch').value);
+    atualizarStatsPerfil();
+    renderPostsDoUsuario();
+    alert(isEditingPost ? '✅ Post atualizado!' : '✅ Blog publicado!');
+    document.querySelector('[data-tab="feed"]').click();
+  });
+
+  // SAVE DRAFT
+  editorOverlay.querySelector('#editorSaveDraftBtn').addEventListener('click', () => {
+    const titulo = editorTitleEl.value.trim();
+    const conteudo = editorContentEl.innerHTML.trim();
+    if(!titulo && !conteudo && editorImages.length === 0){
+      alert('Escreva algo antes de salvar o rascunho.');
+      return;
+    }
+    const id = currentDraftId || 'draft_' + Date.now();
+    const draft = {
+      id,
+      titulo,
+      conteudo,
+      imagens: [...editorImages],
+      atualizado: new Date().toISOString()
+    };
+    if(currentDraftId) {
+      const idx = drafts.blogs.findIndex(d => d.id === currentDraftId);
+      if(idx !== -1) drafts.blogs[idx] = draft;
+      else drafts.blogs.unshift(draft);
+    } else {
+      drafts.blogs = drafts.blogs.filter(d => d.id !== 'autosave');
+      drafts.blogs.unshift(draft);
+      currentDraftId = id;
+    }
+    salvarBlogDrafts();
+    renderBlogDrafts();
+    alert('📥 Rascunho salvo na nuvem!');
+    adicionarNotificacao('dica','Rascunho salvo','Seu rascunho de blog foi guardado na nuvem.');
+  });
+
+  editorOverlay.querySelector('#editorCancelBtn').addEventListener('click', fecharEditor);
+  editorOverlay.querySelector('#closeEditorBtn').addEventListener('click', fecharEditor);
+
+  function fecharEditor(){
+    clearTimeout(autosaveTimer);
+    if(editorOverlay) {
+      editorOverlay.remove();
+      editorOverlay = null;
+    }
+    editorTitleEl = null;
+    editorContentEl = null;
+    editorImages = [];
+    currentDraftId = null;
+    currentEditPostId = null;
+  }
+
+  function autosaveEditor(){
+    if(isEditingPost) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      const titulo = editorTitleEl.value.trim();
+      const conteudo = editorContentEl.innerHTML.trim();
+      if(!titulo && (!conteudo || conteudo === '<br>') && editorImages.length === 0) return;
+
+      let draftId = currentDraftId || 'autosave';
+      const draft = {
+        id: draftId,
+        titulo,
+        conteudo,
+        imagens: [...editorImages],
+        atualizado: new Date().toISOString(),
+        auto: true
+      };
+      const idx = drafts.blogs.findIndex(d => d.id === draftId);
+      if(idx !== -1) drafts.blogs[idx] = draft;
+      else drafts.blogs.unshift(draft);
+      salvarBlogDrafts();
+      renderBlogDrafts();
+
+      const hint = editorOverlay.querySelector('#editorAutosaveHint');
+      if(hint) {
+        hint.classList.add('saved');
+        hint.innerHTML = '<i class="fas fa-check-circle"></i> Rascunho salvo automaticamente';
+        setTimeout(() => {
+          if(hint) {
+            hint.classList.remove('saved');
+            hint.innerHTML = '<i class="fas fa-cloud"></i> Rascunho salvo automaticamente';
+          }
+        }, 2000);
+      }
+    }, 900);
+  }
+}
+
+function renderEditorImages(){
+  const preview = editorOverlay.querySelector('#editorMediaPreview');
+  if(!preview) return;
+  preview.innerHTML = '';
+  editorImages.forEach((src, i) => {
+    const el = document.createElement('div');
+    el.className = 'media-item';
+    el.innerHTML = `<img src="${src}"><button class="remove-media" data-i="${i}"><i class="fas fa-times"></i></button>`;
+    el.querySelector('.remove-media').addEventListener('click', (e) => {
+      e.stopPropagation();
+      editorImages.splice(i, 1);
+      renderEditorImages();
+    });
+    preview.appendChild(el);
+  });
+}
+
+document.getElementById('openBlogEditorBtn').addEventListener('click', () => abrirEditorBlog());
+
+/* ============================================================
+   PERFIL
+============================================================ */
+const els={
+  nameInput:document.getElementById('nameInput'), atInput:document.getElementById('atInput'),
+  bioInput:document.getElementById('bioInput'), bioCounter:document.getElementById('bioCounter'),
+  nameDisplay:document.getElementById('profileNameDisplay'), atDisplay:document.getElementById('profileAtDisplay'),
+  bioDisplay:document.getElementById('bioDisplay'), avatarImg:document.getElementById('avatarImg'),
+  avatarPlaceholder:document.getElementById('avatarPlaceholder'), bannerPreview:document.getElementById('bannerPreview'),
+  editFields:document.getElementById('editFields'), profileActions:document.getElementById('profileActions'),
+  saveStatus:document.getElementById('saveStatus'), avatarEditBtn:document.getElementById('avatarEditBtn'),
+  bannerEditBtn:document.getElementById('bannerEditBtn'), statPosts:document.getElementById('statPosts'),
+  statLikes:document.getElementById('statLikes'), statViews:document.getElementById('statViews'),
+  userPostsGrid:document.getElementById('userPostsGrid'), profileDraftList:document.getElementById('profileDraftList')
+};
+
+function renderPerfil(){
+  els.nameDisplay.textContent=profile.name||'Sem nome';
+  els.atDisplay.textContent=profile.at||'@usuario';
+  if(profile.bio&&profile.bio.trim()){ els.bioDisplay.textContent=profile.bio; els.bioDisplay.classList.remove('empty'); }
+  else { els.bioDisplay.textContent='Nenhuma biografia adicionada.'; els.bioDisplay.classList.add('empty'); }
+  if(profile.avatar){ els.avatarImg.src=profile.avatar; els.avatarImg.style.display='block'; els.avatarPlaceholder.style.display='none'; }
+  else { els.avatarImg.style.display='none'; els.avatarPlaceholder.style.display='flex'; }
+  if(profile.banner){ els.bannerPreview.style.backgroundImage=`url(${profile.banner})`; els.bannerPreview.style.backgroundSize='cover'; els.bannerPreview.style.backgroundPosition='center'; }
+  else els.bannerPreview.style.backgroundImage='';
+  els.nameInput.value=profile.name||''; els.atInput.value=profile.at||''; els.bioInput.value=profile.bio||'';
+  els.bioCounter.textContent=(profile.bio||'').length;
+  atualizarStatsPerfil(); renderPostsDoUsuario();
+  document.getElementById('userChipName').textContent=profile.name||CURRENT_USER;
+  const chip=document.getElementById('userChipAvatar');
+  chip.innerHTML = profile.avatar?`<img src="${profile.avatar}">`:`<i class="fas fa-user-astronaut"></i>`;
+}
+function renderModo(){
+  if(editando){
+    els.editFields.style.display='flex';
+    els.profileActions.innerHTML=`<button class="btn-secondary" id="viewModeBtn" style="padding:12px 22px; border-radius:40px;"><i class="fas fa-eye"></i> Ver como outros veem</button>`;
+    els.avatarEditBtn.style.display='flex'; els.bannerEditBtn.style.display='flex';
+  } else {
+    els.editFields.style.display='none';
+    els.profileActions.innerHTML=`<button class="btn-primary" id="editModeBtn" style="padding:12px 26px; border-radius:40px;"><i class="fas fa-pen"></i> Editar perfil</button>`;
+    els.avatarEditBtn.style.display='none'; els.bannerEditBtn.style.display='none';
+  }
+  const vb=document.getElementById('viewModeBtn'), eb=document.getElementById('editModeBtn');
+  if(vb) vb.addEventListener('click',()=>{editando=false;renderModo();});
+  if(eb) eb.addEventListener('click',()=>{editando=true;renderModo();});
+}
+function postsDoUsuario(){ return posts.filter(p=>(p.autor||'')===profile.name); }
+function atualizarStatsPerfil(){
+  const m=postsDoUsuario();
+  els.statPosts.textContent=m.length;
+  els.statLikes.textContent=m.reduce((s,p)=>s+(p.likes||0),0);
+  els.statViews.textContent=m.reduce((s,p)=>s+(p.views||0),0);
+}
+function renderPostsDoUsuario(){
+  const m=postsDoUsuario().sort((a,b)=>new Date(b.data)-new Date(a.data));
+  els.userPostsGrid.innerHTML='';
+  if(!m.length){ els.userPostsGrid.innerHTML=`<div style="grid-column:1/-1;padding:18px;text-align:center;color:var(--text-muted);font-size:0.85rem;">Você ainda não publicou nada.</div>`; return; }
+  m.forEach(p=>{
+    const el=document.createElement('div'); el.className='mini-post';
+    const img=p.imagens&&p.imagens[0]?`<img src="${p.imagens[0]}">`:`<i class="fas ${p.icone||'fa-star'}"></i>`;
+    el.innerHTML=`
+      <button class="mini-edit-btn" data-edit="${p.id}"><i class="fas fa-pen"></i></button>
+      <button class="mini-delete-btn" data-del="${p.id}"><i class="fas fa-trash"></i></button>
+      <div class="thumb">${img}</div>
+      <div class="mini-body"><h4>${escapeHtml(p.titulo)}</h4><span>${formatarData(p.data)}</span></div>`;
+    el.addEventListener('click',e=>{
+      const del=e.target.closest('[data-del]');
+      const edit=e.target.closest('[data-edit]');
+      if(edit){ e.stopPropagation(); abrirEditorBlog(null, p.id); return; }
+      if(del){ e.stopPropagation(); apagarPost(p.id); return; }
+      abrirPostModal(p);
+    });
+    els.userPostsGrid.appendChild(el);
+  });
+}
+els.bioInput.addEventListener('input',()=>{ els.bioCounter.textContent=els.bioInput.value.length; });
+
+document.getElementById('saveProfileDraftBtn').addEventListener('click',()=>{
+  drafts.profile = {
+    name: els.nameInput.value.trim(),
+    at: els.atInput.value.trim(),
+    bio: els.bioInput.value.trim(),
+    atualizado: new Date().toISOString()
+  };
+  Cloud.save(CURRENT_USER,'drafts',drafts);
+  renderProfileDraft();
+  alert('📥 Rascunho de perfil salvo!');
+  adicionarNotificacao('dica','Rascunho de perfil salvo','Você pode restaurar suas alterações a qualquer momento.');
+});
+
+function renderProfileDraft(){
+  els.profileDraftList.innerHTML='';
+  const d=drafts.profile;
+  if(!d){ els.profileDraftList.innerHTML='<div class="empty-drafts"><i class="fas fa-inbox"></i>Nenhum rascunho de perfil.</div>'; return; }
+  const el=document.createElement('div'); el.className='draft-item';
+  el.innerHTML=`
+    <div class="draft-thumb"><i class="fas fa-user-astronaut"></i></div>
+    <div class="draft-info">
+      <h4>${escapeHtml(d.name||'(sem nome)')} · ${escapeHtml(d.at||'')}</h4>
+      <span>${formatarData(d.atualizado)}</span>
+    </div>
+    <div class="draft-actions">
+      <button class="draft-action" data-restore><i class="fas fa-undo"></i></button>
+      <button class="draft-action del" data-del><i class="fas fa-trash"></i></button>
+    </div>`;
+  el.querySelector('[data-restore]').addEventListener('click',()=>{
+    editando=true; renderModo();
+    els.nameInput.value=d.name||''; els.atInput.value=d.at||''; els.bioInput.value=d.bio||'';
+    els.bioCounter.textContent=(d.bio||'').length;
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+  el.querySelector('[data-del]').addEventListener('click',()=>{
+    if(!confirm('Apagar rascunho de perfil?'))return;
+    drafts.profile=null; Cloud.save(CURRENT_USER,'drafts',drafts); renderProfileDraft();
+  });
+  els.profileDraftList.appendChild(el);
+}
+
+document.getElementById('saveProfileBtn').addEventListener('click',()=>{
+  const name=els.nameInput.value.trim()||profile.name||'Usuário';
+  let at=els.atInput.value.trim()||profile.at||('@'+CURRENT_USER);
+  if(!at.startsWith('@')) at='@'+at.replace(/^@+/,'');
+  profile.name=name; profile.at=at; profile.bio=els.bioInput.value.trim();
+  Cloud.save(CURRENT_USER,'profile',profile);
+  drafts.profile=null; Cloud.save(CURRENT_USER,'drafts',drafts); renderProfileDraft();
+  renderPerfil();
+  els.saveStatus.classList.add('show'); setTimeout(()=>els.saveStatus.classList.remove('show'),2000);
+  editando=false; renderModo();
+  adicionarNotificacao('perfil','Perfil atualizado','Suas informações de perfil foram salvas.');
+});
+document.getElementById('cancelEditBtn').addEventListener('click',()=>{
+  els.nameInput.value=profile.name; els.atInput.value=profile.at; els.bioInput.value=profile.bio;
+  els.bioCounter.textContent=(profile.bio||'').length;
+  editando=false; renderModo();
+});
+document.getElementById('resetProfileBtn').addEventListener('click',()=>{
+  if(!confirm('Restaurar perfil para o padrão?'))return;
+  profile={ name:loadAccounts()[CURRENT_USER]?.nome||CURRENT_USER, at:'@'+CURRENT_USER, bio:'', avatar:null, banner:null };
+  Cloud.save(CURRENT_USER,'profile',profile);
+  renderPerfil(); editando=false; renderModo();
+});
+document.getElementById('avatarUpload').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f||!f.type.startsWith('image/'))return;
+  const r=new FileReader(); r.onload=ev=>{ profile.avatar=ev.target.result; Cloud.save(CURRENT_USER,'profile',profile); renderPerfil(); }; r.readAsDataURL(f);
+});
+document.getElementById('bannerUpload').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f||!f.type.startsWith('image/'))return;
+  const r=new FileReader(); r.onload=ev=>{ profile.banner=ev.target.result; Cloud.save(CURRENT_USER,'profile',profile); renderPerfil(); }; r.readAsDataURL(f);
+});
+
+/* ============================================================
+   STARTUP
+============================================================ */
+entrarNoApp();
+</script>
+</body>
+</html>
